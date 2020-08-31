@@ -99,5 +99,4 @@ See project [FCFIELDS](https://issues.folio.org/browse/FCFIELDS)
 at the [FOLIO issue tracker](https://dev.folio.org/guidelines/issue-tracker/).
 
 ## Code analysis
-[SonarQube analysis](https://sonarcloud.io/dashboard?id=org.folio%3A
-folio-custom-fields).
+[SonarQube analysis](https://sonarcloud.io/dashboard?id=org.folio%3Afolio-custom-fields).
