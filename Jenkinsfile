@@ -1,6 +1,6 @@
 buildMvn {
-  publishModDescriptor = true
+  publishModDescriptor = false
   mvnDeploy = true
-  publishAPI = true
+  publishAPI = false
   runLintRamlCop = true
 }
