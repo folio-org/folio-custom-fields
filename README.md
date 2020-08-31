@@ -13,7 +13,7 @@ Version 2.0. See the file "[LICENSE](LICENSE)" for more information.
 
 ## Introduction
 
-FOLIO module to store and maintain custom fields. The mod-custom-fields is designed to be a
+The FOLIO module to store and maintain custom fields. The folio-custom-fields is designed to be a
 library that any module can add and use to store custom fields definitions as well as their values.
 
 The custom fields module implements a simple CRUD interface POST/PUT/GET/DELETE on /custom-fields and /custom-fields/$id endpoints. See the ramls/custom-fields.json for precise definitions.
@@ -27,23 +27,23 @@ The general design of the custom fields is following
 The module has a common interface which can be used by several modules. 
 This feature called *Multiple interfaces* and helps OKAPI to dispatch the request to any number of modules with the same interface just use "interfaceType": "multiple"  in the "Provides" section of the ModuleDescriptor.json file
 To define a particular module to be called to, declare `X-Okapi-Module-Id` header, detailed information is able via the link to [Okapi documentation](https://github.com/folio-org/okapi/blob/master/doc/guide.md#multiple-interfaces).
-The additional information about mod-custom-fields and sample request collection can be found in [Confluence](https://wiki.folio.org/pages/viewpage.action?spaceKey=FOLIJET&title=MODCFIELDS-39+-+Custom+Field+backend+demo)
+The additional information about folio-custom-fields and sample request collection can be found in [Confluence](https://wiki.folio.org/pages/viewpage.action?spaceKey=FOLIJET&title=MODCFIELDS-39+-+Custom+Field+backend+demo)
 
 ## Module Deployment
 
 The custom fields functionality can be added to any module as a jar file.
 The target module needs to carry out the changes described below. 
 Please note that indicated module version and ModuleDescriptor.json file serve informational purpose.  
-  1. Add maven dependency for `mod-custom-fields` in project pom file.
+  1. Add maven dependency for `folio-custom-fields` in project pom file.
   Example:
    ~~~~
-    <dependency>
-          <groupId>org.folio</groupId>
-          <artifactId>mod-custom-fields</artifactId>
-          <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+   <dependency>
+     <groupId>org.folio</groupId>
+     <artifactId>folio-custom-fields</artifactId>
+     <version>1.4.1</version>
+   </dependency>
    ~~~~
-  We recommend to use the latest released version. The list of released versions is available via the [link](https://github.com/folio-org/mod-custom-fields/releases).
+  We recommend using the latest released version. The list of released versions is available via the [link](https://github.com/folio-org/folio-custom-fields/releases).
   2. Modify the section `scripts` in schema.json file to include `create_custom_fields_table.sql`, which will created a table for storing module-specific custom fields and additional triggers.
   Example:
   ~~~~
@@ -92,12 +92,12 @@ Please note that indicated module version and ModuleDescriptor.json file serve i
    }
    ~~~~ 
   The permission name inside of the `permissionsRequired` section can be modified to represent the module purpose.
-  See [mod-users](https://github.com/folio-org/mod-users/pull/136/files) as an example of `mod-custom-fields` integration.
- 
+  See [mod-users](https://github.com/folio-org/mod-users/pull/136/files) as an example of `folio-custom-fields` integration.
 ## Issue tracker
 
-See project [MODCFIELDS](https://issues.folio.org/browse/MODCFIELDS)
+See project [FCFIELDS](https://issues.folio.org/browse/FCFIELDS)
 at the [FOLIO issue tracker](https://dev.folio.org/guidelines/issue-tracker/).
 
 ## Code analysis
-[SonarQube analysis](https://sonarcloud.io/dashboard?id=org.folio%3Amod-custom-fields).
+[SonarQube analysis](https://sonarcloud.io/dashboard?id=org.folio%3A
+folio-custom-fields).
