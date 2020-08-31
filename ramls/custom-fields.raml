@@ -1,18 +1,18 @@
 #%RAML 1.0
 
-title: mod-custom-fields
+title: folio-custom-fields
 version: v0.1
 protocols: [ HTTP, HTTPS ]
-baseUri: https://github.com/folio-org/mod-custom-fields
+baseUri: https://github.com/folio-org/folio-custom-fields
 
 documentation:
-  - title: mod-custom-fields, a library and common interface for custom fields to be used by several modules
+  - title: folio-custom-fields, a library and common interface for custom fields to be used by several modules
     content: |
       FOLIO module library to store and maintain custom fields using Okapi's multiple interfaces feature.
       All modules that use this library share the CRUD interface POST/PUT/GET/DELETE on /custom-fields and /custom-fields/$id endpoints.
       The client must set the X-Okapi-Module-Id header, for details see
       [Okapi multiples interfaces documentation](https://github.com/folio-org/okapi/blob/master/doc/guide.md#multiple-interfaces),
-      [mod-custom-fields introduction](https://github.com/folio-org/mod-custom-fields#introduction), and
+      [folio-custom-fields introduction](https://github.com/folio-org/folio-custom-fields#introduction), and
       [Custom Field backend demo](https://wiki.folio.org/pages/viewpage.action?spaceKey=FOLIJET&title=MODCFIELDS-39+-+Custom+Field+backend+demo).
 
 types:
