@@ -15,15 +15,15 @@
   </licenses>
 
   <properties>
-    <raml-module-builder.version>30.0.2</raml-module-builder.version>
+    <raml-module-builder.version>31.0.2</raml-module-builder.version>
     <folio-service-tools.version>1.5.1</folio-service-tools.version>
     <folio-di-support.version>1.1.0</folio-di-support.version>
-    <lombok.version>1.18.4</lombok.version>
-    <commons-validator.version>1.6</commons-validator.version>
-    <junit.version>4.12</junit.version>
-    <spring.version>5.2.6.RELEASE</spring.version>
-    <easy-random.version>4.0.0.RC1</easy-random.version>
-    <rest-assured.version>3.3.0</rest-assured.version>
+    <lombok.version>1.18.12</lombok.version>
+    <commons-validator.version>1.7</commons-validator.version>
+    <junit.version>4.13</junit.version>
+    <spring.version>5.2.8.RELEASE</spring.version>
+    <easy-random.version>4.2.0</easy-random.version>
+    <rest-assured.version>4.3.1</rest-assured.version>
     <ramlfiles_path>${basedir}/ramls</ramlfiles_path>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -94,12 +94,20 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+        <version>2.8.1</version>
+        <configuration>
+          <generateBackupPoms>false</generateBackupPoms>
+        </configuration>
+      </plugin>
+
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
+        <version>3.8.1</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <release>11</release>
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
@@ -107,7 +115,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.1.2</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -121,7 +129,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.1</version>
+        <version>3.0.0-M5</version>
         <configuration>
           <useSystemClassLoader>false</useSystemClassLoader>
           <systemPropertyVariables>
@@ -135,7 +143,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>3.2.0</version>
         <executions>
           <execution>
             <id>add_generated_sources_folder</id>
@@ -155,7 +163,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>1.6.0</version>
+        <version>3.0.0</version>
         <executions>
           <execution>
             <id>generate_interfaces</id>
@@ -211,12 +219,12 @@
       </plugin>
 
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
+        <groupId>com.nickwongdev</groupId>
         <artifactId>aspectj-maven-plugin</artifactId>
-        <version>1.11</version>
+        <version>1.12.6</version>
         <configuration>
           <verbose>true</verbose>
-          <complianceLevel>1.8</complianceLevel>
+          <complianceLevel>11</complianceLevel>
           <includes>
             <include>**/impl/*.java</include>
             <include>**/*.aj</include>
@@ -255,7 +263,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.2.0</version>
         <executions>
           <execution>
             <id>copy-resources</id>
@@ -319,7 +327,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.2.4</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -345,7 +353,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.5.3</version>
+        <version>3.0.0-M1</version>
         <configuration>
           <preparationGoals>clean verify</preparationGoals>
           <tagNameFormat>v@{project.version}</tagNameFormat>
