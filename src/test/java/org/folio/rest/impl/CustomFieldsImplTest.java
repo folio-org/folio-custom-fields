@@ -160,21 +160,21 @@ public class CustomFieldsImplTest extends TestBase {
   public void shouldReturn422WhenNameIsNullOnPost() throws IOException, URISyntaxException {
     String customField = readFile("fields/post/postCustomFieldEmptyName.json");
     String error = postWithStatus(CUSTOM_FIELDS_PATH, customField, SC_UNPROCESSABLE_ENTITY, USER1_HEADER).asString();
-    assertThat(error, containsString("may not be null"));
+    assertThat(error, containsString("must not be null"));
   }
 
   @Test
   public void shouldReturn422WhenTypeIsNullOnPost() throws IOException, URISyntaxException {
     String customField = readFile("fields/post/postCustomFieldEmptyType.json");
     String error = postWithStatus(CUSTOM_FIELDS_PATH, customField, SC_UNPROCESSABLE_ENTITY).asString();
-    assertThat(error, containsString("may not be null"));
+    assertThat(error, containsString("must not be null"));
   }
 
   @Test
   public void shouldReturn422WhenEntityTypeIsNullOnPost() throws IOException, URISyntaxException {
     String customField = readFile("fields/post/postCustomFieldEmptyEntityType.json");
     String error = postWithStatus(CUSTOM_FIELDS_PATH, customField, SC_UNPROCESSABLE_ENTITY).asString();
-    assertThat(error, containsString("may not be null"));
+    assertThat(error, containsString("must not be null"));
   }
 
   @Test
@@ -385,7 +385,7 @@ public class CustomFieldsImplTest extends TestBase {
     CustomField customField = createCustomField(postBody);
     String resourcePath = itemResourcePath(customField.getId());
     String error = putWithStatus(resourcePath, putBody, SC_UNPROCESSABLE_ENTITY, USER1_HEADER).asString();
-    assertThat(error, containsString("may not be null"));
+    assertThat(error, containsString("must not be null"));
   }
 
   @Test
@@ -396,7 +396,7 @@ public class CustomFieldsImplTest extends TestBase {
     CustomField customField = createCustomField(postBody);
     String resourcePath = itemResourcePath(customField.getId());
     String error = putWithStatus(resourcePath, putBody, SC_UNPROCESSABLE_ENTITY).asString();
-    assertThat(error, containsString("may not be null"));
+    assertThat(error, containsString("must not be null"));
   }
 
   @Test
@@ -407,7 +407,7 @@ public class CustomFieldsImplTest extends TestBase {
     CustomField customField = createCustomField(postBody);
     String resourcePath = itemResourcePath(customField.getId());
     String error = putWithStatus(resourcePath, putBody, SC_UNPROCESSABLE_ENTITY).asString();
-    assertThat(error, containsString("may not be null"));
+    assertThat(error, containsString("must not be null"));
   }
 
   @Test
