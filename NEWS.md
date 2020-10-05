@@ -1,3 +1,8 @@
+## 1.5.0 2020-10-05
+* FCFIELDS-1 Migrate to JDK 11 and RMB 31.x
+* Rename project to "folio-custom-fields"
+* MODCFIELDS-56 - Use camel-case names for auto-generated refIds
+
 ## 1.4.1 2020-07-06
 * MODCFIELDS-57 - Incorrect order of Custom Fields when drag-n-drop fields
 * MODCFIELDS-55 - Incorrect order of Custom Fields when adding a 10th field
