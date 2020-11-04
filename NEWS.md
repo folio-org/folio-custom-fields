@@ -1,3 +1,6 @@
+## 1.5.1 2020-11-04
+* Update RMB to v31.1.5
+
 ## 1.5.0 2020-10-05
 * FCFIELDS-1 Migrate to JDK 11 and RMB 31.x
 * Rename project to "folio-custom-fields"
