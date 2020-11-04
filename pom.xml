@@ -20,7 +20,7 @@
     <folio-di-support.version>1.2.0</folio-di-support.version>
     <lombok.version>1.18.12</lombok.version>
     <commons-validator.version>1.7</commons-validator.version>
-    <junit.version>4.13</junit.version>
+    <junit.version>4.13.1</junit.version>
     <spring.version>5.2.8.RELEASE</spring.version>
     <easy-random.version>4.2.0</easy-random.version>
     <rest-assured.version>4.3.1</rest-assured.version>
