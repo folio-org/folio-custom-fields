@@ -16,9 +16,9 @@ import javax.ws.rs.core.Response;
 
 import io.vertx.core.ServiceHelper;
 import io.vertx.core.Vertx;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -40,7 +40,7 @@ import org.folio.service.spi.RecordServiceFactory;
   "org.folio.validate"})
 public class ApplicationConfig {
 
-  private final Logger logger = LoggerFactory.getLogger(ApplicationConfig.class);
+  private final Logger logger = LogManager.getLogger(ApplicationConfig.class);
 
   @Bean
   public PartialFunction<Throwable, Response> customFieldsExcHandler() {
