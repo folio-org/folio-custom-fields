@@ -1,3 +1,7 @@
+## 1.5.2 2021-02-18
+* Update RMB to v32.1.0
+* Add PERSONAL_DATA_DISCLOSURE
+
 ## 1.5.1 2020-11-04
 * Update RMB to v31.1.5
 
