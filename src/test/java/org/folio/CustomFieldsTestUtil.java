@@ -18,6 +18,7 @@ import java.util.List;
 import io.restassured.http.Header;
 import io.vertx.core.Vertx;
 
+import org.folio.okapi.common.XOkapiHeaders;
 import org.folio.rest.jaxrs.model.CustomField;
 
 public class CustomFieldsTestUtil {
@@ -27,8 +28,8 @@ public class CustomFieldsTestUtil {
   public static final String USER3_ID = "33333333-3333-3333-3333-333333333333";
   public static final String USER4_ID = "44444444-4444-4444-4444-444444444444";
 
-  public static final Header USER1_HEADER = createTokenHeader("u1", USER1_ID);
-  public static final Header USER2_HEADER = createTokenHeader("u2", USER2_ID);
+  public static final Header USER1_HEADER = new Header(XOkapiHeaders.USER_ID, USER1_ID);
+  public static final Header USER2_HEADER = new Header(XOkapiHeaders.USER_ID, USER2_ID);
 
   public static final String STUB_FIELD_ID = "11111111-1111-1111-a111-111111111111";
   public static final String CUSTOM_FIELDS_PATH = "/custom-fields";

@@ -7,7 +7,8 @@ import static org.folio.rest.exc.ExceptionPredicates.instanceOf;
 
 import javax.ws.rs.core.Response;
 
-import com.google.gson.Gson;
+
+import io.vertx.core.json.Json;
 
 import org.folio.common.pf.PartialFunction;
 import org.folio.rest.ResponseHelper;
@@ -43,7 +44,7 @@ public class CustomFieldExceptionHandlers {
   private static Response invalidValueToUnprocessable(Throwable t) {
     InvalidFieldValueException exc = (InvalidFieldValueException) t;
 
-    Error error = ValidationUtil.createError(new Gson().toJson(exc.getValue()), exc.getField(), exc.getMessage());
+    Error error = ValidationUtil.createError(Json.encode(exc.getValue()), exc.getField(), exc.getMessage());
 
     return ResponseHelper.statusWithJson(SC_UNPROCESSABLE_ENTITY, error);
   }

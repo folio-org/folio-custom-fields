@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.google.gson.Gson;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
+import io.vertx.core.json.Json;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.folio.rest.jaxrs.model.CustomField;
@@ -79,7 +79,7 @@ public class ValidationServiceImpl implements ValidationService {
       validator.validate(fieldValue, fieldDefinition);
     } catch (IllegalArgumentException ex) {
       return Collections.singletonList(
-        createError(new Gson().toJson(fieldValue), fieldDefinition.getRefId(), ex.getMessage()));
+        createError(Json.encode(fieldValue), fieldDefinition.getRefId(), ex.getMessage()));
     }
     return Collections.emptyList();
   }
