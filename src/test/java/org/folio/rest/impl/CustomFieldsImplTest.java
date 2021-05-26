@@ -194,7 +194,7 @@ public class CustomFieldsImplTest extends TestBase {
   public void shouldReturn401WhenNoUserHeader() throws IOException, URISyntaxException {
     String customField = readFile("fields/post/postCustomFieldHalfName.json");
     String error = postWithStatus(CUSTOM_FIELDS_PATH, customField, SC_UNAUTHORIZED).asString();
-    assertThat(error, containsString("header is required"));
+    assertThat(error, containsString("Unauthorized"));
   }
 
   @Test
