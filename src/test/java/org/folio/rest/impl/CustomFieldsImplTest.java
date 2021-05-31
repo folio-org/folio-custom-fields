@@ -21,7 +21,6 @@ import static org.folio.CustomFieldsTestUtil.itemStatResourcePath;
 import static org.folio.CustomFieldsTestUtil.mockUserRequests;
 import static org.folio.test.util.TestUtil.readFile;
 import static org.folio.test.util.TestUtil.readJsonFile;
-import static org.folio.test.util.TokenTestUtil.createTokenHeader;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
@@ -188,11 +187,11 @@ public class CustomFieldsImplTest extends TestBase {
   public void shouldReturnErrorIfInvalidCustomFieldType() throws IOException, URISyntaxException {
     String customField = readFile("fields/post/postInvalidCustomField.json");
     String error = postWithStatus(CUSTOM_FIELDS_PATH, customField, SC_BAD_REQUEST).asString();
-    assertThat(error, containsString("Json content error"));
+    assertThat(error, containsString("Cannot construct instance"));
   }
 
   @Test
-  public void shouldReturn401WhenNoTokenHeader() throws IOException, URISyntaxException {
+  public void shouldReturn401WhenNoUserHeader() throws IOException, URISyntaxException {
     String customField = readFile("fields/post/postCustomFieldHalfName.json");
     String error = postWithStatus(CUSTOM_FIELDS_PATH, customField, SC_UNAUTHORIZED).asString();
     assertThat(error, containsString("Unauthorized"));
@@ -216,7 +215,7 @@ public class CustomFieldsImplTest extends TestBase {
 
   @Test
   public void shouldReturn404WhenUserNotFound() throws IOException, URISyntaxException {
-    Header userWithoutPermission = createTokenHeader("name", USER4_ID);
+    Header userWithoutPermission = new Header(XOkapiHeaders.USER_ID, USER4_ID);
     String cfWithHalfName = readFile("fields/post/postCustomFieldHalfName.json");
     String error = postWithStatus(CUSTOM_FIELDS_PATH, cfWithHalfName, SC_NOT_FOUND, userWithoutPermission).asString();
     assertThat(error, containsString("User not found"));
