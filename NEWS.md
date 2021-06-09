@@ -1,3 +1,6 @@
+## 1.6.0 2021-06-09
+* FCFIELDS-17 Upgrade to RMB 33 and Vert.X 4.1.0.CR1
+
 ## 1.5.2 2021-02-18
 * Update RMB to v32.1.0
 * Add PERSONAL_DATA_DISCLOSURE
