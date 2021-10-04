@@ -1,3 +1,6 @@
+## 1.6.1
+* FCFIELDS-19 Upgrade to RMB 33.1.1, Vert.x 4.1.4, folio-service-tools 1.7.1
+
 ## 1.6.0 2021-06-09
 * FCFIELDS-17 Upgrade to RMB 33 and Vert.X 4.1.0.CR1
 
