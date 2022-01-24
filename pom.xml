@@ -21,7 +21,7 @@
     <lombok.version>1.18.20</lombok.version>
     <commons-validator.version>1.7</commons-validator.version>
     <junit.version>4.13.2</junit.version>
-    <spring.version>5.2.17.RELEASE</spring.version>
+    <spring.version>5.3.14</spring.version>
     <easy-random.version>4.3.0</easy-random.version>
     <rest-assured.version>4.4.0</rest-assured.version>
     <ramlfiles_path>${basedir}/ramls</ramlfiles_path>
