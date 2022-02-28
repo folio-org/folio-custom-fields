@@ -39,17 +39,15 @@ public class NoOpRecordServiceTest {
   @BeforeClass
   public static void setUpClass() {
     EasyRandomParameters params = new EasyRandomParameters()
-      .randomize(named("id"), StringDelegatingRandomizer.aNewStringDelegatingRandomizer(
-        UUIDRandomizer.aNewUUIDRandomizer()))
-      .randomize(named("name"), StringRandomizer.aNewStringRandomizer(20))
-      .randomize(named("refId"), StringRandomizer.aNewStringRandomizer(20))
-      .randomize(named("entityType"), StringDelegatingRandomizer.aNewStringDelegatingRandomizer(
-        EnumRandomizer.aNewEnumRandomizer(EntityType.class)))
+      .randomize(named("id"), new StringDelegatingRandomizer(new UUIDRandomizer()))
+      .randomize(named("name"), new StringRandomizer(20))
+      .randomize(named("refId"), new StringRandomizer(20))
+      .randomize(named("entityType"), new StringDelegatingRandomizer(new EnumRandomizer<>(EntityType.class)))
       .excludeField(named("metadata"));
 
     cfRandom = new EasyRandom(params);
 
-    tenantIdRandom = StringRandomizer.aNewStringRandomizer(10);
+    tenantIdRandom = new StringRandomizer(10);
   }
 
   private static CustomField nextRandomCustomField() {

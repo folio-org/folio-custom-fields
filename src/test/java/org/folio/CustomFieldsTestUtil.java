@@ -9,7 +9,6 @@ import static org.folio.repository.CustomFieldsConstants.CUSTOM_FIELDS_TABLE;
 import static org.folio.test.util.DBTestUtil.deleteFromTable;
 import static org.folio.test.util.DBTestUtil.getAll;
 import static org.folio.test.util.TestUtil.readFile;
-import static org.folio.test.util.TokenTestUtil.createTokenHeader;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
