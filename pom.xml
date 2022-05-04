@@ -15,13 +15,13 @@
   </licenses>
 
   <properties>
-    <raml-module-builder.version>33.2.6</raml-module-builder.version>
+    <raml-module-builder.version>33.2.9</raml-module-builder.version>
     <folio-service-tools.version>1.8.0</folio-service-tools.version>
-    <folio-di-support.version>1.5.0</folio-di-support.version>
+    <folio-di-support.version>1.5.1</folio-di-support.version>
     <lombok.version>1.18.22</lombok.version>
     <commons-validator.version>1.7</commons-validator.version>
     <junit.version>4.13.2</junit.version>
-    <spring.version>5.3.16</spring.version>
+    <spring.version>5.3.19</spring.version>
     <easy-random.version>5.0.0</easy-random.version>
     <rest-assured.version>4.5.1</rest-assured.version>
     <ramlfiles_path>${basedir}/ramls</ramlfiles_path>
