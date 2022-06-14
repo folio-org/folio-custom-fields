@@ -25,10 +25,10 @@
     <folio-di-support.version>1.6.0-SNAPSHOT</folio-di-support.version>
     <lombok.version>1.18.24</lombok.version>
     <commons-validator.version>1.7</commons-validator.version>
+    <spring.version>5.3.20</spring.version>
 
     <!--  Test dependencies versions  -->
     <junit.version>4.13.2</junit.version>
-    <spring.version>5.3.20</spring.version>
     <easy-random.version>5.0.0</easy-random.version>
     <rest-assured.version>5.1.1</rest-assured.version>
 
@@ -57,6 +57,11 @@
       <groupId>org.folio</groupId>
       <artifactId>folio-di-support</artifactId>
       <version>${folio-di-support.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>${spring.version}</version>
     </dependency>
     <dependency>
       <groupId>org.folio</groupId>
