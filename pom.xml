@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.folio</groupId>
@@ -15,21 +16,35 @@
   </licenses>
 
   <properties>
-    <raml-module-builder.version>33.2.9</raml-module-builder.version>
-    <folio-service-tools.version>1.8.0</folio-service-tools.version>
-    <folio-di-support.version>1.5.1</folio-di-support.version>
-    <lombok.version>1.18.22</lombok.version>
-    <commons-validator.version>1.7</commons-validator.version>
-    <junit.version>4.13.2</junit.version>
-    <spring.version>5.3.19</spring.version>
-    <easy-random.version>5.0.0</easy-random.version>
-    <rest-assured.version>4.5.1</rest-assured.version>
-    <ramlfiles_path>${basedir}/ramls</ramlfiles_path>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <ramlfiles_path>${basedir}/ramls</ramlfiles_path>
+    <sonar.exclusions>src/main/java/**/ApplicationConfig.*</sonar.exclusions>
 
-    <sonar.exclusions>
-      src/main/java/**/ApplicationConfig.*
-    </sonar.exclusions>
+    <raml-module-builder.version>34.0.0</raml-module-builder.version>
+    <folio-service-tools.version>1.9.0-SNAPSHOT</folio-service-tools.version>
+    <folio-di-support.version>1.6.0-SNAPSHOT</folio-di-support.version>
+    <lombok.version>1.18.24</lombok.version>
+    <commons-validator.version>1.7</commons-validator.version>
+    <spring.version>5.3.20</spring.version>
+
+    <!--  Test dependencies versions  -->
+    <junit.version>4.13.2</junit.version>
+    <easy-random.version>5.0.0</easy-random.version>
+    <rest-assured.version>5.1.1</rest-assured.version>
+
+    <!-- Plugins versions   -->
+    <versions-maven-plugin.version>2.11.0</versions-maven-plugin.version>
+    <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+    <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+    <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+    <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
+    <properties-maven-plugin.version>1.1.0</properties-maven-plugin.version>
+    <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
+    <aspectj-maven-plugin.version>1.12.6</aspectj-maven-plugin.version>
+    <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+    <copy-rename-maven-plugin.version>1.0.1</copy-rename-maven-plugin.version>
+    <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
+    <maven-release-plugin.version>3.0.0-M5</maven-release-plugin.version>
   </properties>
 
   <dependencies>
@@ -96,7 +111,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
-        <version>2.8.1</version>
+        <version>${versions-maven-plugin.version}</version>
         <configuration>
           <generateBackupPoms>false</generateBackupPoms>
         </configuration>
@@ -105,7 +120,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
+        <version>${maven-compiler-plugin.version}</version>
         <configuration>
           <release>11</release>
           <encoding>UTF-8</encoding>
@@ -115,7 +130,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.1</version>
+        <version>${maven-source-plugin.version}</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -129,7 +144,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M5</version>
+        <version>${maven-surefire-plugin.version}</version>
         <configuration>
           <useSystemClassLoader>false</useSystemClassLoader>
           <systemPropertyVariables>
@@ -143,7 +158,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>${build-helper-maven-plugin.version}</version>
         <executions>
           <execution>
             <id>add_generated_sources_folder</id>
@@ -180,7 +195,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>properties-maven-plugin</artifactId>
-        <version>1.0.0</version>
+        <version>${properties-maven-plugin.version}</version>
         <executions>
           <execution>
             <goals>
@@ -209,7 +224,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>${exec-maven-plugin.version}</version>
         <executions>
           <execution>
             <id>git submodule update</id>
@@ -233,7 +248,7 @@
       <plugin>
         <groupId>com.nickwongdev</groupId>
         <artifactId>aspectj-maven-plugin</artifactId>
-        <version>1.12.6</version>
+        <version>${aspectj-maven-plugin.version}</version>
         <configuration>
           <verbose>true</verbose>
           <complianceLevel>11</complianceLevel>
@@ -275,7 +290,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>${maven-resources-plugin.version}</version>
         <executions>
           <execution>
             <id>copy-resources</id>
@@ -316,7 +331,7 @@
       <plugin>
         <groupId>com.coderplus.maven.plugins</groupId>
         <artifactId>copy-rename-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>${copy-rename-maven-plugin.version}</version>
         <executions>
           <execution>
             <id>rename-descriptor-outputs</id>
@@ -339,7 +354,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.4</version>
+        <version>${maven-shade-plugin.version}</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -364,7 +379,7 @@
                   </manifestEntries>
                 </transformer>
               </transformers>
-              <artifactSet />
+              <artifactSet/>
               <outputFile>${project.build.directory}/${project.artifactId}-fat.jar</outputFile>
             </configuration>
           </execution>
@@ -374,7 +389,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>3.0.0-M1</version>
+        <version>${maven-release-plugin.version}</version>
         <configuration>
           <preparationGoals>clean verify</preparationGoals>
           <tagNameFormat>v@{project.version}</tagNameFormat>
