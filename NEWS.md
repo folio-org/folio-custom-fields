@@ -1,3 +1,8 @@
+## 1.8.0 2022-06-17
+* FCFIELDS-23 Upgrade to RMB 34.0.0
+* MODCFIELDS-69: Upgrade Spring, RMB, folio-di-support (CVE-2022-22965)
+* MODCFIELDS-68: Locale independent unit tests
+
 ## 1.7.0 2022-02-23
 * FCFIELDS-23 Upgrade to RMB 33.2.6
 
