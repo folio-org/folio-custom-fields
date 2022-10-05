@@ -30,6 +30,7 @@
     <junit.version>4.13.2</junit.version>
     <easy-random.version>5.0.0</easy-random.version>
     <rest-assured.version>5.2.0</rest-assured.version>
+    <aspectj.version>1.9.9.1</aspectj.version>
 
     <!-- Plugins versions   -->
     <versions-maven-plugin.version>2.12.0</versions-maven-plugin.version>
@@ -276,12 +277,12 @@
           <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
-            <version>1.9.9.1</version>
+            <version>${aspectj.version}</version>
           </dependency>
           <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjtools</artifactId>
-            <version>1.9.9.1</version>
+            <version>${aspectj.version}</version>
           </dependency>
         </dependencies>
       </plugin>
