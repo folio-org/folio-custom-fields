@@ -19,31 +19,31 @@
     <ramlfiles_path>${basedir}/ramls</ramlfiles_path>
     <sonar.exclusions>src/main/java/**/ApplicationConfig.*</sonar.exclusions>
 
-    <raml-module-builder.version>34.0.0</raml-module-builder.version>
-    <folio-service-tools.version>1.9.0</folio-service-tools.version>
-    <folio-di-support.version>1.6.0</folio-di-support.version>
+    <raml-module-builder.version>35.0.0</raml-module-builder.version>
+    <folio-service-tools.version>1.10.0-SNAPSHOT</folio-service-tools.version>
+    <folio-di-support.version>1.7.0-SNAPSHOT</folio-di-support.version>
     <lombok.version>1.18.24</lombok.version>
     <commons-validator.version>1.7</commons-validator.version>
-    <spring.version>5.3.20</spring.version>
+    <spring.version>5.3.23</spring.version>
 
     <!--  Test dependencies versions  -->
     <junit.version>4.13.2</junit.version>
     <easy-random.version>5.0.0</easy-random.version>
-    <rest-assured.version>5.1.1</rest-assured.version>
+    <rest-assured.version>5.2.0</rest-assured.version>
 
     <!-- Plugins versions   -->
-    <versions-maven-plugin.version>2.11.0</versions-maven-plugin.version>
+    <versions-maven-plugin.version>2.12.0</versions-maven-plugin.version>
     <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
     <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-    <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+    <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
     <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
     <properties-maven-plugin.version>1.1.0</properties-maven-plugin.version>
-    <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
+    <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
     <aspectj-maven-plugin.version>1.12.6</aspectj-maven-plugin.version>
     <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
     <copy-rename-maven-plugin.version>1.0.1</copy-rename-maven-plugin.version>
-    <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
-    <maven-release-plugin.version>3.0.0-M5</maven-release-plugin.version>
+    <maven-shade-plugin.version>3.4.0</maven-shade-plugin.version>
+    <maven-release-plugin.version>3.0.0-M6</maven-release-plugin.version>
   </properties>
 
   <dependencies>
@@ -276,12 +276,12 @@
           <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
-            <version>1.9.6</version>
+            <version>1.9.9.1</version>
           </dependency>
           <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjtools</artifactId>
-            <version>1.9.6</version>
+            <version>1.9.9.1</version>
           </dependency>
         </dependencies>
       </plugin>
