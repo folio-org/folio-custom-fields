@@ -1,3 +1,6 @@
+## 1.9.0 IN_PROGRESS
+* FCFIELDS-29 Upgrade to RMB 35.0.0
+
 ## 1.8.0 2022-06-17
 * FCFIELDS-23 Upgrade to RMB 34.0.0
 * MODCFIELDS-69: Upgrade Spring, RMB, folio-di-support (CVE-2022-22965)
