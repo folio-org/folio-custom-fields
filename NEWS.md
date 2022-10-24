@@ -1,4 +1,4 @@
-## 1.9.0 IN_PROGRESS
+## 1.9.0 2022-10-21
 * FCFIELDS-29 Upgrade to RMB 35.0.0
 
 ## 1.8.0 2022-06-17
