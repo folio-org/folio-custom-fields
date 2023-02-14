@@ -1,3 +1,11 @@
+## 1.10.0 2023-02-14
+### Dependencies
+* Bump `folio-service-tools` from `1.10.0` to `1.10.1`
+* Bump `raml-module-builder` from `35.0.0` to `35.0.6`
+* Bump `lombok` from `1.18.24` to `1.18.26`
+* Bump `spring` from `5.3.23` to `5.3.25`
+* Bump `rest-assured` from `5.2.0` to `5.3.0`
+
 ## 1.9.0 2022-10-21
 * FCFIELDS-29 Upgrade to RMB 35.0.0
 
