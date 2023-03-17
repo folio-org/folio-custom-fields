@@ -21,9 +21,8 @@ import io.vertx.core.Vertx;
 import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Tuple;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,10 +35,9 @@ import org.folio.rest.persist.PostgresClient;
 import org.folio.rest.persist.SQLConnection;
 import org.folio.rest.persist.interfaces.Results;
 
+@Log4j2
 @Component
 public class CustomFieldsRepositoryImpl implements CustomFieldsRepository {
-
-  private static final Logger LOG = LogManager.getLogger(CustomFieldsRepositoryImpl.class);
 
   @Autowired
   private Vertx vertx;
@@ -53,10 +51,11 @@ public class CustomFieldsRepositoryImpl implements CustomFieldsRepository {
 
 
   @Override
-  public Future<CustomField> save(CustomField entity, String tenantId, @Nullable AsyncResult<SQLConnection> connection) {
+  public Future<CustomField> save(CustomField entity, String tenantId,
+                                  @Nullable AsyncResult<SQLConnection> connection) {
     Promise<String> promise = Promise.promise();
     setIdIfMissing(entity);
-    LOG.debug("Saving a custom field with id: {}.", entity.getId());
+    log.debug("Saving a custom field with id: {}.", entity.getId());
     PostgresClient client = pgClient(tenantId);
     if (connection != null) {
       client.save(connection, CUSTOM_FIELDS_TABLE, entity.getId(), entity, promise);
@@ -74,7 +73,7 @@ public class CustomFieldsRepositoryImpl implements CustomFieldsRepository {
   @Override
   public Future<Optional<CustomField>> findById(String id, String tenantId) {
     Promise<CustomField> promise = Promise.promise();
-    LOG.debug("Getting a custom field with id: {}.", id);
+    log.debug("Getting a custom field with id: {}.", id);
     pgClient(tenantId).getById(CUSTOM_FIELDS_TABLE, id, CustomField.class, promise);
 
     return promise.future().map(Optional::ofNullable)
@@ -94,7 +93,7 @@ public class CustomFieldsRepositoryImpl implements CustomFieldsRepository {
     String query = String.format(SELECT_REF_IDS, getCFTableName(tenantId));
     String refIdRegex = String.format(REF_ID_REGEX, customFieldName);
     Tuple parameters = Tuple.of(refIdRegex);
-    LOG.debug("Getting custom field ref ids by given name: {}.", customFieldName);
+    log.debug("Getting custom field ref ids by given name: {}.", customFieldName);
     PostgresClient client = pgClient(tenantId);
     if (connection != null) {
       client.select(connection, query, parameters, promise);
@@ -109,7 +108,7 @@ public class CustomFieldsRepositoryImpl implements CustomFieldsRepository {
   public Future<Integer> maxOrder(String tenantId) {
     Promise<Row> promise = Promise.promise();
     final String query = String.format(SELECT_MAX_ORDER, getCFTableName(tenantId));
-    LOG.debug("Getting maximum order of custom fields.");
+    log.debug("Getting maximum order of custom fields.");
     pgClient(tenantId).selectSingle(query, promise);
     return promise.future().map(this::mapMaxOrder)
       .recover(excTranslator.translateOrPassBy());
@@ -118,7 +117,7 @@ public class CustomFieldsRepositoryImpl implements CustomFieldsRepository {
   @Override
   public Future<CustomFieldCollection> findByQuery(String query, int offset, int limit, String tenantId) {
     CqlQuery<CustomField> q = new CqlQuery<>(pgClient(tenantId), CUSTOM_FIELDS_TABLE, CustomField.class);
-    LOG.debug("Getting custom fields by query: {}.", query);
+    log.debug("Getting custom fields by query: {}.", query);
     return q.get(query, offset, limit).map(this::toCustomFieldCollection)
       .recover(excTranslator.translateOrPassBy());
   }
@@ -131,7 +130,7 @@ public class CustomFieldsRepositoryImpl implements CustomFieldsRepository {
   @Override
   public Future<Boolean> update(CustomField entity, String tenantId, @Nullable AsyncResult<SQLConnection> connection) {
     Promise<RowSet<Row>> promise = Promise.promise();
-    LOG.debug("Updating a custom field with id: {}.", entity.getId());
+    log.debug("Updating a custom field with id: {}.", entity.getId());
 
     PostgresClient client = pgClient(tenantId);
     if (connection != null) {
@@ -152,7 +151,7 @@ public class CustomFieldsRepositoryImpl implements CustomFieldsRepository {
   @Override
   public Future<Boolean> delete(String id, String tenantId, @Nullable AsyncResult<SQLConnection> connection) {
     Promise<RowSet<Row>> promise = Promise.promise();
-    LOG.debug("Deleting custom field by given id: {}.", id);
+    log.debug("Deleting custom field by given id: {}.", id);
     if (connection != null) {
       pgClient(tenantId).delete(connection, CUSTOM_FIELDS_TABLE, id, promise);
     } else {
@@ -163,7 +162,8 @@ public class CustomFieldsRepositoryImpl implements CustomFieldsRepository {
   }
 
   private Integer mapMaxRefId(RowSet<Row> rowSet) {
-    if (rowSet.rowCount() == 1 && !RowSetUtils.mapFirstItem(rowSet, row -> row.getString(VALUES_COLUMN)).contains("_")) {
+    if (rowSet.rowCount() == 1 &&
+      !RowSetUtils.mapFirstItem(rowSet, row -> row.getString(VALUES_COLUMN)).contains("_")) {
       return 1;
     }
     return RowSetUtils.streamOf(rowSet)

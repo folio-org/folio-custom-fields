@@ -16,9 +16,8 @@ import javax.ws.rs.core.Response;
 
 import io.vertx.core.ServiceHelper;
 import io.vertx.core.Vertx;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -33,6 +32,7 @@ import org.folio.service.NoOpRecordService;
 import org.folio.service.RecordService;
 import org.folio.service.spi.RecordServiceFactory;
 
+@Log4j2
 @Configuration
 @ComponentScan(basePackages = {
   "org.folio.repository",
@@ -40,7 +40,6 @@ import org.folio.service.spi.RecordServiceFactory;
   "org.folio.validate"})
 public class ApplicationConfig {
 
-  private final Logger logger = LogManager.getLogger(ApplicationConfig.class);
 
   @Bean
   public PartialFunction<Throwable, Response> customFieldsExcHandler() {
@@ -77,7 +76,7 @@ public class ApplicationConfig {
       rc = new NoOpRecordService();
 
       // log warning: No concrete implementation !!
-      logger.warn("No implementation of {} service provider interface found in the classpath.\n" +
+      log.warn("No implementation of {} service provider interface found in the classpath.\n" +
           "Check that the correct implementation class is set in META-INF/services/{} configuration file.\n" +
           "The default No-op service will be used instead: some functions might not work properly!",
           RecordServiceFactory.class.getName(), RecordServiceFactory.class.getName());
@@ -87,7 +86,7 @@ public class ApplicationConfig {
 
       if (factories.size() > 1) {
         // log warning: too many implementations
-        logger.warn("Too many implementations of {} service provider interface found. The first one will be used: {}",
+        log.warn("Too many implementations of {} service provider interface found. The first one will be used: {}",
           RecordServiceFactory.class.getName(), rc.getClass().getName());
       }
     }

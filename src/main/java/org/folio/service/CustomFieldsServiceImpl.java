@@ -36,6 +36,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -63,6 +64,7 @@ import org.folio.rest.validate.Validation;
 import org.folio.service.exc.InvalidFieldValueException;
 import org.folio.service.exc.ServiceExceptions;
 
+@Log4j2
 @Component
 public class CustomFieldsServiceImpl implements CustomFieldsService {
 
@@ -91,6 +93,9 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
 
   @Override
   public Future<CustomField> save(CustomField customField, OkapiParams params) {
+    log.debug("Attempts to save customField by [tenant: {}, customField: {}]",
+      params.getTenant(), customField);
+
     return repository.maxOrder(params.getTenant())
       .compose(maxOrder -> {
         customField.setOrder(maxOrder + 1);
@@ -100,6 +105,9 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
 
   @Override
   public Future<Void> update(String id, CustomField customField, OkapiParams params) {
+    log.debug("Attempts to update customField by [id: {}, tenant: {}, customField: {}]",
+      id, params.getTenant(), customField);
+
     return findById(id, params.getTenant())
       .compose(oldCustomField -> {
         customField.setId(oldCustomField.getId());
@@ -110,8 +118,14 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
 
   @Override
   public Future<CustomField> findById(String id, String tenantId) {
+    log.debug("findById:: Attempts to get customField by [id: {}, tenantId: {}]", id, tenantId);
+
     return repository.findById(id, tenantId)
-      .map(customField -> customField.orElseThrow(() -> ServiceExceptions.notFound(CustomField.class, id)));
+      .map(customField -> customField
+        .orElseThrow(() -> {
+          log.warn("Failed on finding customField by [id: {}, tenantId: {}]", id, tenantId);
+          return ServiceExceptions.notFound(CustomField.class, id);
+        }));
   }
 
   @Override
@@ -122,6 +136,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
   @Override
   public Future<Void> delete(String id, String tenantId) {
     Future<CustomField> cf = findById(id, tenantId);
+    log.debug("delete:: Attempts to delete customField by [id: {}, tenantId: {}]", id, tenantId);
 
     return cf
       .compose(field -> recordService.deleteAllValues(field, tenantId))
@@ -132,6 +147,8 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
 
   @Override
   public Future<List<CustomField>> replaceAll(List<CustomField> customFields, OkapiParams params) {
+    log.debug("replaceAll:: Attempt to replace all customFields by [tenantId: {}]", params.getTenant());
+
     return repository.findByQuery(null, 0, Integer.MAX_VALUE, params.getTenant())
       .compose(existingFields -> {
         setOrder(customFields);
@@ -202,9 +219,11 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     if (sortingOrder.isPresent()) {
       switch (sortingOrder.get()) {
         case ASC:
+          log.info("sortOptions:: Attempts to sort by naturalOrder");
           cfOptions.getValues().sort(comparing(SelectFieldOption::getValue, naturalOrder()));
           break;
         case DESC:
+          log.info("sortOptions:: Attempts to sort by reversedOrder");
           cfOptions.getValues().sort(comparing(SelectFieldOption::getValue, reverseOrder()));
           break;
         case CUSTOM:
@@ -360,7 +379,11 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
   }
 
   private Future<Void> failIfNotFound(boolean found, String entityId) {
-    return found ? succeededFuture() : failedFuture(ServiceExceptions.notFound(CustomField.class, entityId));
+    if (found) {
+      return succeededFuture();
+    }
+    log.warn("Failed on finding customField by [id: {}]", entityId);
+    return failedFuture(ServiceExceptions.notFound(CustomField.class, entityId));
   }
 
   private Future<Void> populateCreator(CustomField entity, OkapiParams params) {
@@ -403,6 +426,8 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
    * @return query with "sortby order"
    */
   private String withSortByOrder(String cqlQuery) {
+    log.debug("withSortByOrder:: Attempts to sort by [cqlQuery: {}]", cqlQuery);
+
     try {
       final CQLParser parser = new CQLParser(CQLParser.V1POINT2);
       CQLNode node = parser.parse(!StringUtils.isBlank(cqlQuery) ? cqlQuery : ALL_RECORDS_QUERY);
@@ -418,8 +443,8 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         return newSortNode.toCQL();
       }
     } catch (CQLParseException | IOException e) {
-      throw new IllegalArgumentException("Unsupported Query Format : Search query is in an unsupported format: " + cqlQuery,
-        e);
+      log.warn("Unsupported Query Format : Search query is in an unsupported format, msg: {}", e.getMessage());
+      throw new IllegalArgumentException(e);
     }
   }
 
