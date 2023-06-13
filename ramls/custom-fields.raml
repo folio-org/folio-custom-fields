@@ -53,10 +53,10 @@ resourceTypes:
       schemaItem: customField
       exampleCollection: !include examples/customFieldCollection.sample
       exampleItem: !include examples/customField.sample
+  is: [ xOkapiModuleId ]
   post:
-    is: [ xOkapiModuleId, validate ]
+    is: [ validate ]
   put:
-    is: [ xOkapiModuleId ]
     description: |
       Update all custom fields and delete fields that are not mentioned in request
     body:
@@ -81,15 +81,14 @@ resourceTypes:
             example: "internal server error, contact administrator"
   get:
     is: [
-      xOkapiModuleId,
       searchable: {description: "Query should contain custom field attributes", example: "name=department"},
       pageable,
       validate
     ]
   /{id}:
-    is: [ xOkapiModuleId ]
     displayName: Custom Fields
     description: Get, Delete or Update a custom field
+    is: [ xOkapiModuleId ]
     uriParameters:
       id:
         pattern : "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
@@ -99,9 +98,9 @@ resourceTypes:
         exampleItem: !include examples/customField.sample
     /stats:
       displayName: Custom field usage statistic
+      is: [ xOkapiModuleId ]
       get:
         description: Returns usage statistic of custom field with the given id
-        is: [ xOkapiModuleId, language]
         responses:
           200:
             description: "Returns statistic of custom field with the given id"
@@ -128,8 +127,8 @@ resourceTypes:
                 example: "Internal server error, contact administrator"
     /options/{optId}/stats:
       displayName: Custom field option usage statistic
+      is: [ xOkapiModuleId ]
       get:
-        is: [ xOkapiModuleId ]
         description: Returns usage statistic of custom field option with the given optId
         responses:
           200:

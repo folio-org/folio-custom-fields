@@ -50,7 +50,7 @@ public class CustomFieldsImpl implements CustomFields {
   @Override
   @Validate
   @HandleValidationErrors
-  public void postCustomFields(String lang, CustomField entity, Map<String, String> okapiHeaders,
+  public void postCustomFields(String lang, String xOkapiModuleId, CustomField entity, Map<String, String> okapiHeaders,
                                Handler<AsyncResult<Response>> asyncResultHandler, Context vertxContext) {
     definitionValidator.validate(entity);
     Future<CustomField> saved = customFieldsService.save(entity, new OkapiParams(okapiHeaders));
@@ -60,7 +60,7 @@ public class CustomFieldsImpl implements CustomFields {
   @Override
   @Validate
   @HandleValidationErrors
-  public void putCustomFields(PutCustomFieldCollection request, Map<String, String> okapiHeaders,
+  public void putCustomFields(String xOkapiModuleId, PutCustomFieldCollection request, Map<String, String> okapiHeaders,
                               Handler<AsyncResult<Response>> asyncResultHandler, Context vertxContext) {
     List<CustomField> customFields = request.getCustomFields();
     customFields
@@ -76,7 +76,8 @@ public class CustomFieldsImpl implements CustomFields {
   @Override
   @Validate
   @HandleValidationErrors
-  public void getCustomFields(String query, int offset, int limit, String lang, Map<String, String> okapiHeaders,
+  public void getCustomFields(String query, int offset, int limit,
+                              String lang, String xOkapiModuleId, Map<String, String> okapiHeaders,
                               Handler<AsyncResult<Response>> asyncResultHandler, Context vertxContext) {
 
     Future<CustomFieldCollection> found =
@@ -127,7 +128,8 @@ public class CustomFieldsImpl implements CustomFields {
   @Override
   @Validate
   @HandleValidationErrors
-  public void getCustomFieldsOptionsStatsByIdAndOptId(String id, String optId, Map<String, String> okapiHeaders,
+  public void getCustomFieldsOptionsStatsByIdAndOptId(String id, String optId,
+                                                      String xOkapiModuleId, Map<String, String> okapiHeaders,
                                                       Handler<AsyncResult<Response>> asyncResultHandler,
                                                       Context vertxContext) {
     Future<CustomFieldOptionStatistic> optionStatResult = customFieldsService
