@@ -118,7 +118,7 @@ public class CustomFieldsImpl implements CustomFields {
   @Override
   @Validate
   @HandleValidationErrors
-  public void getCustomFieldsStatsById(String id, String lang, Map<String, String> okapiHeaders,
+  public void getCustomFieldsStatsById(String id, String lang, String xOkapiModuleId, Map<String, String> okapiHeaders,
                                        Handler<AsyncResult<Response>> asyncResultHandler, Context vertxContext) {
     Future<CustomFieldStatistic> stats = customFieldsService.retrieveStatistic(id, tenantId(okapiHeaders));
 
