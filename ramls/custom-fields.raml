@@ -28,6 +28,17 @@ traits:
   searchable: !include raml-util/traits/searchable.raml
   validate: !include raml-util/traits/validation.raml
   language: !include raml-util/traits/language.raml
+  xOkapiModuleId:
+    headers:
+      X-Okapi-Module-Id:
+        example: mod-users-19.0.0
+        required: true
+        description: |
+          The Okapi Module-Id, must be set by the client because all modules that use this library share the CRUD interface POST/PUT/GET/DELETE on /custom-fields and /custom-fields/$id endpoints with Okapi's multiple interfaces feature.
+          For details see
+          [Okapi multiples interfaces documentation](https://github.com/folio-org/okapi/blob/master/doc/guide.md#multiple-interfaces),
+          [folio-custom-fields introduction](https://github.com/folio-org/folio-custom-fields#introduction), and
+          [Custom Field backend demo](https://wiki.folio.org/pages/viewpage.action?spaceKey=FOLIJET&title=MODCFIELDS-39+-+Custom+Field+backend+demo).
 
 resourceTypes:
   collection: !include raml-util/rtypes/collection.raml
@@ -42,6 +53,7 @@ resourceTypes:
       schemaItem: customField
       exampleCollection: !include examples/customFieldCollection.sample
       exampleItem: !include examples/customField.sample
+  is: [ xOkapiModuleId ]
   post:
     is: [ validate ]
   put:
@@ -76,6 +88,7 @@ resourceTypes:
   /{id}:
     displayName: Custom Fields
     description: Get, Delete or Update a custom field
+    is: [ xOkapiModuleId ]
     uriParameters:
       id:
         pattern : "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
@@ -85,6 +98,7 @@ resourceTypes:
         exampleItem: !include examples/customField.sample
     /stats:
       displayName: Custom field usage statistic
+      is: [ xOkapiModuleId ]
       get:
         description: Returns usage statistic of custom field with the given id
         is: [language]
@@ -114,6 +128,7 @@ resourceTypes:
                 example: "Internal server error, contact administrator"
     /options/{optId}/stats:
       displayName: Custom field option usage statistic
+      is: [ xOkapiModuleId ]
       get:
         description: Returns usage statistic of custom field option with the given optId
         responses:
