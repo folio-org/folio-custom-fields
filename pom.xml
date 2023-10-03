@@ -22,7 +22,7 @@
     <raml-module-builder.version>35.0.6</raml-module-builder.version> <!-- requires a matching vertx.version -->
     <vertx.version>4.3.4</vertx.version>
     <folio-service-tools.version>1.10.1</folio-service-tools.version>
-    <folio-di-support.version>1.7.0</folio-di-support.version>
+    <folio-di-support.version>2.0.0-SNAPSHOT</folio-di-support.version>
     <lombok.version>1.18.26</lombok.version>
     <commons-validator.version>1.7</commons-validator.version>
     <spring.version>5.3.25</spring.version>
