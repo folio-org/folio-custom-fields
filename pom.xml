@@ -25,7 +25,7 @@
     <folio-di-support.version>2.0.1</folio-di-support.version>
     <lombok.version>1.18.26</lombok.version>
     <commons-validator.version>1.7</commons-validator.version>
-    <spring.version>5.3.25</spring.version>
+    <spring.version>6.0.12</spring.version>
 
     <!--  Test dependencies versions  -->
     <junit.version>4.13.2</junit.version>
