@@ -1,3 +1,11 @@
+## 1.10.0 2023-10-11
+* Logging improvement ([FCFIELDS-25](https://issues.folio.org/browse/FCFIELDS-25))
+* Mention required X-Okapi-Module-Id header in API docs ([FCFIELDS-37](https://issues.folio.org/browse/FCFIELDS-37))
+* Update to Java 17 ([FCFIELDS-38](https://issues.folio.org/browse/FCFIELDS-38))
+* Update the codeowners file ([FCFIELDS-39](https://issues.folio.org/browse/FCFIELDS-39))
+* Use GitHub Workflows api-lint and api-schema-lint and api-doc ([FCFIELDS-36](https://issues.folio.org/browse/FCFIELDS-36))
+* Update the folio-di-support in the pom.xml ([FCFIELDS-40](https://issues.folio.org/browse/FCFIELDS-40))
+
 ## 1.9.1 2023-02-14
 ### Bug Fixes
 * ModuleName overwrites actual ModuleName ([FCFIELDS-34](https://issues.folio.org/browse/FCFIELDS-34))
