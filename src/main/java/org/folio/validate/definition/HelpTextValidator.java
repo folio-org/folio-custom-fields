@@ -1,11 +1,10 @@
 package org.folio.validate.definition;
 
-import java.util.Objects;
-
 import org.apache.commons.lang3.Validate;
-import org.folio.rest.jaxrs.model.CustomField;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import org.folio.rest.jaxrs.model.CustomField;
 
 @Component
 public class HelpTextValidator  implements Validatable {
@@ -20,10 +19,8 @@ public class HelpTextValidator  implements Validatable {
    */
   @Override
   public void validateDefinition(CustomField fieldDefinition) {
-    if(!Objects.isNull(fieldDefinition.getHelpText())) {
-      Validate.isTrue(fieldDefinition.getHelpText().length() <= helpTextLengthLimit,
-        "The 'helpText' length cannot be more than %s", helpTextLengthLimit);
-    }
+    Validate.isTrue(fieldDefinition.getHelpText().length() <= helpTextLengthLimit,
+      "The 'helpText' length cannot be more than %s", helpTextLengthLimit);
   }
 
   @Override
