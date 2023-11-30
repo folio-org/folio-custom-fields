@@ -47,6 +47,7 @@ import org.folio.rest.jaxrs.model.CustomFieldOptionStatistic;
 import org.folio.rest.jaxrs.model.CustomFieldStatistic;
 import org.folio.rest.jaxrs.model.Error;
 import org.folio.rest.jaxrs.model.Metadata;
+import org.folio.rest.jaxrs.model.PutCustomFieldCollection;
 import org.folio.rest.jaxrs.model.TextField;
 import org.folio.test.util.TestBase;
 import org.junit.Before;
@@ -434,7 +435,7 @@ public class CustomFieldsImplTest extends TestBase {
     assertEquals(1, (int) firstField.getOrder());
     assertEquals(2, (int) secondField.getOrder());
 
-    CustomFieldCollection request = readJsonFile("fields/put/putCustomFieldCollection.json", CustomFieldCollection.class);
+    PutCustomFieldCollection request = readJsonFile("fields/put/putCustomFieldCollection.json", PutCustomFieldCollection.class);
     request.getCustomFields().get(1).setId(field1.getId());
     putWithNoContent(CUSTOM_FIELDS_PATH, Json.encode(request), USER2_HEADER);
 
@@ -490,7 +491,7 @@ public class CustomFieldsImplTest extends TestBase {
     final String cfNameUpdated = "Expiration Date updated";
     field2.setName(cfNameUpdated);
     field3.setRefId("some-ref-id_1");
-    CustomFieldCollection request = new CustomFieldCollection().withCustomFields(Arrays.asList(field3, field2));
+    PutCustomFieldCollection request = new PutCustomFieldCollection().withCustomFields(Arrays.asList(field3, field2)).withEntityType("user");
     putWithNoContent(CUSTOM_FIELDS_PATH, Json.encode(request), USER2_HEADER);
 
     List<CustomField> customFieldsAfterUpdate = getAllCustomFields(vertx);
@@ -523,7 +524,7 @@ public class CustomFieldsImplTest extends TestBase {
     //update cf id
     field2.setId(null);
 
-    CustomFieldCollection request = new CustomFieldCollection().withCustomFields(Arrays.asList(field1, field2));
+    PutCustomFieldCollection request = new PutCustomFieldCollection().withCustomFields(Arrays.asList(field1, field2)).withEntityType("user");
     putWithNoContent(CUSTOM_FIELDS_PATH, Json.encode(request), USER2_HEADER);
 
     List<CustomField> customFieldsAfterUpdate = getAllCustomFields(vertx);
@@ -551,7 +552,7 @@ public class CustomFieldsImplTest extends TestBase {
     //update cf type
     field2.setType(CustomField.Type.TEXTBOX_LONG);
 
-    CustomFieldCollection request = new CustomFieldCollection().withCustomFields(Arrays.asList(field1, field2));
+    PutCustomFieldCollection request = new PutCustomFieldCollection().withCustomFields(Arrays.asList(field1, field2)).withEntityType("user");
     String error = putWithStatus(CUSTOM_FIELDS_PATH, Json.encode(request), SC_UNPROCESSABLE_ENTITY, USER2_HEADER).asString();
     assertThat(error, containsString("The type of the custom field can not be changed"));
   }

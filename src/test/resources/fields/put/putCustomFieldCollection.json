@@ -20,5 +20,6 @@
         "default": true
       }
     }
-  ]
+  ],
+  "entityType": "user"
 }
