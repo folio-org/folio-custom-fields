@@ -66,7 +66,7 @@ public class CustomFieldsImpl implements CustomFields {
     customFields
       .forEach(definitionValidator::validate);
     customFields.forEach(field -> field.setMetadata(request.getMetadata()));
-    Future<CustomFieldCollection> updatedFields = customFieldsService.replaceAll(customFields, new OkapiParams(okapiHeaders))
+    Future<CustomFieldCollection> updatedFields = customFieldsService.replaceAll(customFields, request.getEntityType(), new OkapiParams(okapiHeaders))
       .map(fields -> new CustomFieldCollection()
         .withCustomFields(fields)
         .withTotalRecords(fields.size()));

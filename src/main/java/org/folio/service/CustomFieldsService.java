@@ -57,16 +57,17 @@ public interface CustomFieldsService {
   Future<Void> delete(String id, String tenantId);
 
   /**
-   * Replaces all existing custom fields with new collection of custom fields.
-   * If new collection has fields with ids that already exist then those fields will be updated,
-   * fields with ids that don't exist will be added,
-   * existing fields that are not present in new collection will be deleted
+   * Replaces all existing custom fields with new collection of custom fields. If new collection has
+   * fields with ids that already exist then those fields will be updated, fields with ids that
+   * don't exist will be added, existing fields that are not present in new collection will be
+   * deleted. Only custom fields with the specified entityType will be affected.
    *
    * @param newFields collection of new custom fields
-   * @param params    OkapiParams
+   * @param entityType entityType of custom fields
+   * @param params OkapiParams
    * @return updated collection of custom fields
    */
-  Future<List<CustomField>> replaceAll(List<CustomField> newFields, OkapiParams params);
+  Future<List<CustomField>> replaceAll(List<CustomField> newFields, String entityType, OkapiParams params);
 
   /**
    * Retrieves statistic of specific custom field definition usage.
