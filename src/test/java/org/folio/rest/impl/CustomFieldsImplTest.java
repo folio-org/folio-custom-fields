@@ -223,7 +223,7 @@ public class CustomFieldsImplTest extends TestBase {
 
   @Test
   public void shouldReturnAllFieldsOnGetSortedByOrder() throws IOException, URISyntaxException {
-    createFields();
+    createFieldsMultipleEntityTypes();
     CustomFieldCollection fields = getWithOk(CUSTOM_FIELDS_PATH).as(CustomFieldCollection.class);
     assertEquals(2, fields.getCustomFields().size());
     assertThat(fields.getCustomFields().get(0), is(allOf(
@@ -242,7 +242,7 @@ public class CustomFieldsImplTest extends TestBase {
 
   @Test
   public void shouldReturnFieldsByName() throws IOException, URISyntaxException {
-    createFields();
+    createFieldsMultipleEntityTypes();
     String resourcePath = CUSTOM_FIELDS_PATH + "?query=name==Department";
     CustomFieldCollection fields = getWithOk(resourcePath).as(CustomFieldCollection.class);
     assertEquals(1, fields.getCustomFields().size());
@@ -254,7 +254,7 @@ public class CustomFieldsImplTest extends TestBase {
 
   @Test
   public void shouldReturnFieldsByEntityType() throws IOException, URISyntaxException {
-    createFields();
+    createFieldsMultipleEntityTypes();
     String resourcePath = CUSTOM_FIELDS_PATH + "?query=entityType==package";
     CustomFieldCollection fields = getWithOk(resourcePath).as(CustomFieldCollection.class);
     assertEquals(1, fields.getCustomFields().size());
@@ -265,7 +265,7 @@ public class CustomFieldsImplTest extends TestBase {
 
   @Test
   public void shouldReturnFieldsWithPagination() throws IOException, URISyntaxException {
-    createFields();
+    createFieldsMultipleEntityTypes();
     String resourcePath = CUSTOM_FIELDS_PATH + "?offset=0&limit=1&query=cql.allRecords=1 sortby name";
     CustomFieldCollection fields = getWithOk(resourcePath).as(CustomFieldCollection.class);
     assertEquals(1, fields.getCustomFields().size());
@@ -687,9 +687,9 @@ public class CustomFieldsImplTest extends TestBase {
     assertThat(error, containsString("CustomField not found by id"));
   }
 
-  private void createFields() throws IOException, URISyntaxException {
+  private void createFieldsMultipleEntityTypes() throws IOException, URISyntaxException {
     createCustomField(readFile("fields/post/postCustomField.json"));
-    createCustomField(readFile("fields/post/postCustomField2.json"));
+    createCustomField(readFile("fields/post/postCustomField-package.json"));
   }
 
   private CustomField createCustomField(String postBody) {
