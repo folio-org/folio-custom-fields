@@ -423,6 +423,35 @@ public class CustomFieldsImplTest extends TestBase {
   }
 
   @Test
+  public void putCustomFieldsShouldReturn422OnMultipleEntityTypes()
+      throws IOException, URISyntaxException {
+    PutCustomFieldCollection request =
+        readJsonFile("fields/put/putCustomFieldCollection.json", PutCustomFieldCollection.class);
+    request.getCustomFields().get(0).setEntityType("other");
+    String error =
+        putWithStatus(
+                CUSTOM_FIELDS_PATH, Json.encode(request), SC_UNPROCESSABLE_ENTITY, USER1_HEADER)
+            .asString();
+    assertThat(error, containsString("Multiple entityTypes found"));
+  }
+
+  @Test
+  public void putCustomFieldsShouldReturn422WhenCollectionEntityTypeDiffers()
+      throws IOException, URISyntaxException {
+    PutCustomFieldCollection request =
+        readJsonFile("fields/put/putCustomFieldCollection.json", PutCustomFieldCollection.class);
+    request.setEntityType("other");
+    String error =
+        putWithStatus(
+                CUSTOM_FIELDS_PATH, Json.encode(request), SC_UNPROCESSABLE_ENTITY, USER1_HEADER)
+            .asString();
+    assertThat(
+        error,
+        containsString(
+            "Collection entityType 'other' does not match custom fields entityType 'user'"));
+  }
+
+  @Test
   public void shouldReturn422WhenFieldFormatIsNullOnPut() throws IOException, URISyntaxException {
     CustomField field = readJsonFile("fields/post/textbox/postTextBoxShort.json", CustomField.class);
     String postBody = Json.encode(field);

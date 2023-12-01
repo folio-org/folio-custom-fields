@@ -62,6 +62,7 @@ public class CustomFieldsImpl implements CustomFields {
   @HandleValidationErrors
   public void putCustomFields(String xOkapiModuleId, PutCustomFieldCollection request, Map<String, String> okapiHeaders,
                               Handler<AsyncResult<Response>> asyncResultHandler, Context vertxContext) {
+    validatePutCustomFieldCollection(request);
     List<CustomField> customFields = request.getCustomFields();
     customFields
       .forEach(definitionValidator::validate);
@@ -138,5 +139,27 @@ public class CustomFieldsImpl implements CustomFields {
     respond(optionStatResult,
       GetCustomFieldsOptionsStatsByIdAndOptIdResponse::respond200WithApplicationJson,
       asyncResultHandler, excHandler);
+  }
+
+  private void validatePutCustomFieldCollection(PutCustomFieldCollection customFieldCollection)
+    throws IllegalArgumentException {
+    List<String> entityTypes =
+        customFieldCollection.getCustomFields().stream()
+            .map(CustomField::getEntityType)
+            .distinct()
+            .toList();
+    if (entityTypes.size() > 1) {
+      throw new IllegalArgumentException(
+          String.format("Multiple entityTypes found: %s", entityTypes));
+    }
+    if (!entityTypes.isEmpty()) {
+      String entityType = entityTypes.get(0);
+      if (!entityType.equals(customFieldCollection.getEntityType())) {
+        throw new IllegalArgumentException(
+            String.format(
+                "Collection entityType '%s' does not match custom fields entityType '%s'",
+                customFieldCollection.getEntityType(), entityType));
+      }
+    }
   }
 }
