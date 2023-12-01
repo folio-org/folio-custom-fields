@@ -411,6 +411,18 @@ public class CustomFieldsImplTest extends TestBase {
   }
 
   @Test
+  public void putCustomFieldsShouldReturn422WhenCollectionEntityTypeIsNull()
+      throws IOException, URISyntaxException {
+    CustomField field = readJsonFile("fields/post/postCustomField.json", CustomField.class);
+
+    PutCustomFieldCollection request =
+        new PutCustomFieldCollection().withCustomFields(List.of(field));
+    String error =
+        putWithStatus(CUSTOM_FIELDS_PATH, Json.encode(request), SC_UNPROCESSABLE_ENTITY).asString();
+    assertThat(error, containsString("NotNull.message"));
+  }
+
+  @Test
   public void shouldReturn422WhenFieldFormatIsNullOnPut() throws IOException, URISyntaxException {
     CustomField field = readJsonFile("fields/post/textbox/postTextBoxShort.json", CustomField.class);
     String postBody = Json.encode(field);
@@ -469,6 +481,32 @@ public class CustomFieldsImplTest extends TestBase {
     assertEquals("u1", secondFieldUpdatedMetadata.getCreatedByUsername());
     assertEquals(USER2_ID, secondFieldUpdatedMetadata.getUpdatedByUserId());
     assertEquals("u2", secondFieldUpdatedMetadata.getUpdatedByUsername());
+  }
+
+  @Test
+  public void putCustomFieldsShouldHaveNoSideEffectsOnOtherEntityTypes()
+      throws IOException, URISyntaxException {
+    createFieldsMultipleEntityTypes();
+    long distinctEntityTypeCount =
+        getAllCustomFields(vertx).stream().map(CustomField::getEntityType).distinct().count();
+    assertEquals(2, distinctEntityTypeCount);
+
+    String newHelpText = "new help text";
+    CustomField updatedCustomField =
+        readJsonFile("fields/post/postCustomField.json", CustomField.class)
+            .withHelpText(newHelpText);
+    PutCustomFieldCollection request =
+        new PutCustomFieldCollection()
+            .withCustomFields(List.of(updatedCustomField))
+            .withEntityType("user");
+    putWithNoContent(CUSTOM_FIELDS_PATH, Json.encode(request), USER2_HEADER);
+
+    List<CustomField> results = getAllCustomFields(vertx);
+    results.sort(Comparator.comparingInt(CustomField::getOrder));
+    long distinctResultEntityTypeCount =
+        results.stream().map(CustomField::getEntityType).distinct().count();
+    assertEquals(2, distinctResultEntityTypeCount);
+    assertEquals(newHelpText, results.get(0).getHelpText());
   }
 
   @Test
