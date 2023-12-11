@@ -12,6 +12,10 @@
         "$ref": "customField.json"
       }
     },
+    "entityType": {
+      "type": "string",
+      "description": "The entityType of custom fields"
+    },
     "metadata": {
       "description": "User metadata information",
       "$ref": "raml-util/schemas/metadata.schema",
@@ -19,6 +23,7 @@
     }
   },
   "required": [
-    "customFields"
+    "customFields",
+    "entityType"
   ]
 }

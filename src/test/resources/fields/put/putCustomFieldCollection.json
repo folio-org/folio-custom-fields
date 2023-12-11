@@ -5,7 +5,7 @@
       "type" : "TEXTBOX_SHORT",
       "visible": true,
       "required": true,
-      "entityType": "package",
+      "entityType": "user",
       "helpText": "Set new expiration date"
     },
     {
@@ -20,5 +20,6 @@
         "default": true
       }
     }
-  ]
+  ],
+  "entityType": "user"
 }

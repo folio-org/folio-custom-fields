@@ -146,10 +146,12 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
   }
 
   @Override
-  public Future<List<CustomField>> replaceAll(List<CustomField> customFields, OkapiParams params) {
+  public Future<List<CustomField>> replaceAll(
+      List<CustomField> customFields, String entityType, OkapiParams params) {
     log.debug("replaceAll:: Attempt to replace all customFields by [tenantId: {}]", params.getTenant());
 
-    return repository.findByQuery(null, 0, Integer.MAX_VALUE, params.getTenant())
+    String queryStr = String.format("query=(entityType==%s)", entityType);
+    return repository.findByQuery(queryStr, 0, Integer.MAX_VALUE, params.getTenant())
       .compose(existingFields -> {
         setOrder(customFields);
         setIdIfEmpty(customFields);

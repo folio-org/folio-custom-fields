@@ -4,7 +4,7 @@
   "refId": "not-null-ref-id",
   "visible": true,
   "required": true,
-  "entityType": "user",
+  "entityType": "package",
   "helpText": "Set expiration date",
   "order": 1
 }
