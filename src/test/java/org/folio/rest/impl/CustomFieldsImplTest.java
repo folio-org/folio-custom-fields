@@ -47,6 +47,7 @@ import org.folio.rest.jaxrs.model.CustomFieldOptionStatistic;
 import org.folio.rest.jaxrs.model.CustomFieldStatistic;
 import org.folio.rest.jaxrs.model.Error;
 import org.folio.rest.jaxrs.model.Metadata;
+import org.folio.rest.jaxrs.model.PutCustomFieldCollection;
 import org.folio.rest.jaxrs.model.TextField;
 import org.folio.test.util.TestBase;
 import org.junit.Before;
@@ -223,7 +224,7 @@ public class CustomFieldsImplTest extends TestBase {
 
   @Test
   public void shouldReturnAllFieldsOnGetSortedByOrder() throws IOException, URISyntaxException {
-    createFields();
+    createFieldsMultipleEntityTypes();
     CustomFieldCollection fields = getWithOk(CUSTOM_FIELDS_PATH).as(CustomFieldCollection.class);
     assertEquals(2, fields.getCustomFields().size());
     assertThat(fields.getCustomFields().get(0), is(allOf(
@@ -242,7 +243,7 @@ public class CustomFieldsImplTest extends TestBase {
 
   @Test
   public void shouldReturnFieldsByName() throws IOException, URISyntaxException {
-    createFields();
+    createFieldsMultipleEntityTypes();
     String resourcePath = CUSTOM_FIELDS_PATH + "?query=name==Department";
     CustomFieldCollection fields = getWithOk(resourcePath).as(CustomFieldCollection.class);
     assertEquals(1, fields.getCustomFields().size());
@@ -254,7 +255,7 @@ public class CustomFieldsImplTest extends TestBase {
 
   @Test
   public void shouldReturnFieldsByEntityType() throws IOException, URISyntaxException {
-    createFields();
+    createFieldsMultipleEntityTypes();
     String resourcePath = CUSTOM_FIELDS_PATH + "?query=entityType==package";
     CustomFieldCollection fields = getWithOk(resourcePath).as(CustomFieldCollection.class);
     assertEquals(1, fields.getCustomFields().size());
@@ -265,7 +266,7 @@ public class CustomFieldsImplTest extends TestBase {
 
   @Test
   public void shouldReturnFieldsWithPagination() throws IOException, URISyntaxException {
-    createFields();
+    createFieldsMultipleEntityTypes();
     String resourcePath = CUSTOM_FIELDS_PATH + "?offset=0&limit=1&query=cql.allRecords=1 sortby name";
     CustomFieldCollection fields = getWithOk(resourcePath).as(CustomFieldCollection.class);
     assertEquals(1, fields.getCustomFields().size());
@@ -410,6 +411,47 @@ public class CustomFieldsImplTest extends TestBase {
   }
 
   @Test
+  public void putCustomFieldsShouldReturn422WhenCollectionEntityTypeIsNull()
+      throws IOException, URISyntaxException {
+    CustomField field = readJsonFile("fields/post/postCustomField.json", CustomField.class);
+
+    PutCustomFieldCollection request =
+        new PutCustomFieldCollection().withCustomFields(List.of(field));
+    String error =
+        putWithStatus(CUSTOM_FIELDS_PATH, Json.encode(request), SC_UNPROCESSABLE_ENTITY).asString();
+    assertThat(error, containsString("NotNull.message"));
+  }
+
+  @Test
+  public void putCustomFieldsShouldReturn422OnMultipleEntityTypes()
+      throws IOException, URISyntaxException {
+    PutCustomFieldCollection request =
+        readJsonFile("fields/put/putCustomFieldCollection.json", PutCustomFieldCollection.class);
+    request.getCustomFields().get(0).setEntityType("other");
+    String error =
+        putWithStatus(
+                CUSTOM_FIELDS_PATH, Json.encode(request), SC_UNPROCESSABLE_ENTITY, USER1_HEADER)
+            .asString();
+    assertThat(error, containsString("Multiple entityTypes found"));
+  }
+
+  @Test
+  public void putCustomFieldsShouldReturn422WhenCollectionEntityTypeDiffers()
+      throws IOException, URISyntaxException {
+    PutCustomFieldCollection request =
+        readJsonFile("fields/put/putCustomFieldCollection.json", PutCustomFieldCollection.class);
+    request.setEntityType("other");
+    String error =
+        putWithStatus(
+                CUSTOM_FIELDS_PATH, Json.encode(request), SC_UNPROCESSABLE_ENTITY, USER1_HEADER)
+            .asString();
+    assertThat(
+        error,
+        containsString(
+            "Collection entityType 'other' does not match custom fields entityType 'user'"));
+  }
+
+  @Test
   public void shouldReturn422WhenFieldFormatIsNullOnPut() throws IOException, URISyntaxException {
     CustomField field = readJsonFile("fields/post/textbox/postTextBoxShort.json", CustomField.class);
     String postBody = Json.encode(field);
@@ -434,7 +476,7 @@ public class CustomFieldsImplTest extends TestBase {
     assertEquals(1, (int) firstField.getOrder());
     assertEquals(2, (int) secondField.getOrder());
 
-    CustomFieldCollection request = readJsonFile("fields/put/putCustomFieldCollection.json", CustomFieldCollection.class);
+    PutCustomFieldCollection request = readJsonFile("fields/put/putCustomFieldCollection.json", PutCustomFieldCollection.class);
     request.getCustomFields().get(1).setId(field1.getId());
     putWithNoContent(CUSTOM_FIELDS_PATH, Json.encode(request), USER2_HEADER);
 
@@ -471,6 +513,32 @@ public class CustomFieldsImplTest extends TestBase {
   }
 
   @Test
+  public void putCustomFieldsShouldHaveNoSideEffectsOnOtherEntityTypes()
+      throws IOException, URISyntaxException {
+    createFieldsMultipleEntityTypes();
+    long distinctEntityTypeCount =
+        getAllCustomFields(vertx).stream().map(CustomField::getEntityType).distinct().count();
+    assertEquals(2, distinctEntityTypeCount);
+
+    String newHelpText = "new help text";
+    CustomField updatedCustomField =
+        readJsonFile("fields/post/postCustomField.json", CustomField.class)
+            .withHelpText(newHelpText);
+    PutCustomFieldCollection request =
+        new PutCustomFieldCollection()
+            .withCustomFields(List.of(updatedCustomField))
+            .withEntityType("user");
+    putWithNoContent(CUSTOM_FIELDS_PATH, Json.encode(request), USER2_HEADER);
+
+    List<CustomField> results = getAllCustomFields(vertx);
+    results.sort(Comparator.comparingInt(CustomField::getOrder));
+    long distinctResultEntityTypeCount =
+        results.stream().map(CustomField::getEntityType).distinct().count();
+    assertEquals(2, distinctResultEntityTypeCount);
+    assertEquals(newHelpText, results.get(0).getHelpText());
+  }
+
+  @Test
   public void shouldUpdateCustomFieldsWhenReOrderAndFieldRemoved() throws IOException, URISyntaxException {
     createCustomField(readFile("fields/post/postCustomField.json"));
     final CustomField field2 = createCustomField(readFile("fields/post/postCustomField2.json"));
@@ -490,7 +558,7 @@ public class CustomFieldsImplTest extends TestBase {
     final String cfNameUpdated = "Expiration Date updated";
     field2.setName(cfNameUpdated);
     field3.setRefId("some-ref-id_1");
-    CustomFieldCollection request = new CustomFieldCollection().withCustomFields(Arrays.asList(field3, field2));
+    PutCustomFieldCollection request = new PutCustomFieldCollection().withCustomFields(Arrays.asList(field3, field2)).withEntityType("user");
     putWithNoContent(CUSTOM_FIELDS_PATH, Json.encode(request), USER2_HEADER);
 
     List<CustomField> customFieldsAfterUpdate = getAllCustomFields(vertx);
@@ -523,7 +591,7 @@ public class CustomFieldsImplTest extends TestBase {
     //update cf id
     field2.setId(null);
 
-    CustomFieldCollection request = new CustomFieldCollection().withCustomFields(Arrays.asList(field1, field2));
+    PutCustomFieldCollection request = new PutCustomFieldCollection().withCustomFields(Arrays.asList(field1, field2)).withEntityType("user");
     putWithNoContent(CUSTOM_FIELDS_PATH, Json.encode(request), USER2_HEADER);
 
     List<CustomField> customFieldsAfterUpdate = getAllCustomFields(vertx);
@@ -551,7 +619,7 @@ public class CustomFieldsImplTest extends TestBase {
     //update cf type
     field2.setType(CustomField.Type.TEXTBOX_LONG);
 
-    CustomFieldCollection request = new CustomFieldCollection().withCustomFields(Arrays.asList(field1, field2));
+    PutCustomFieldCollection request = new PutCustomFieldCollection().withCustomFields(Arrays.asList(field1, field2)).withEntityType("user");
     String error = putWithStatus(CUSTOM_FIELDS_PATH, Json.encode(request), SC_UNPROCESSABLE_ENTITY, USER2_HEADER).asString();
     assertThat(error, containsString("The type of the custom field can not be changed"));
   }
@@ -687,9 +755,9 @@ public class CustomFieldsImplTest extends TestBase {
     assertThat(error, containsString("CustomField not found by id"));
   }
 
-  private void createFields() throws IOException, URISyntaxException {
+  private void createFieldsMultipleEntityTypes() throws IOException, URISyntaxException {
     createCustomField(readFile("fields/post/postCustomField.json"));
-    createCustomField(readFile("fields/post/postCustomField2.json"));
+    createCustomField(readFile("fields/post/postCustomField-package.json"));
   }
 
   private CustomField createCustomField(String postBody) {
