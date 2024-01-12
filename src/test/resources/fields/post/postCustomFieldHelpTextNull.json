@@ -1,0 +1,8 @@
+{
+  "name": "test custom field",
+  "visible": true,
+  "required": true,
+  "type": "RADIO_BUTTON",
+  "entityType": "user",
+  "order": 1
+}
