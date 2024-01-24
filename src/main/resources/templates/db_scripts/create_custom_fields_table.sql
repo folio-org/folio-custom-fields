@@ -16,23 +16,24 @@ AS $$
     createdByUsername text;
     updatedByUsername text;
  BEGIN
-   createdBy = OLD.jsonb->'metadata'->>'createdByUserId';
-   createdDate = OLD.jsonb->'metadata'->>'createdDate';
-   createdByUsername = OLD.jsonb->'metadata'->>'createdByUsername';
-   updatedBy = NEW.jsonb->'metadata'->>'updatedByUserId';
-   updatedDate = NEW.jsonb->'metadata'->>'updatedDate';
-   updatedByUsername = NEW.jsonb->'metadata'->>'updatedByUsername';
-   if createdBy ISNULL then     createdBy = 'undefined';   end if;
-   if updatedBy ISNULL then     updatedBy = 'undefined';   end if;
-   if createdByUsername ISNULL then     createdByUsername = 'undefined';   end if;
-   if updatedByUsername ISNULL then     updatedByUsername = 'undefined';   end if;
-   if createdDate IS NOT NULL
-       then injectedMetadata = '{"createdDate":"'||to_char(createdDate,'YYYY-MM-DD"T"HH24:MI:SS.MS')||'" , "createdByUserId":"'||createdBy||'" , "createdByUsername":"'||createdByUsername||'", "updatedDate":"'||to_char(updatedDate,'YYYY-MM-DD"T"HH24:MI:SS.MSOF')||'" , "updatedByUserId":"'||updatedBy||'" , "updatedByUsername":"'|| updatedByUsername||'"}';
-       NEW.jsonb = jsonb_set(NEW.jsonb, '{metadata}' ,  injectedMetadata::jsonb , false);
-   else
-     NEW.jsonb = NEW.jsonb;
-   end if;
- RETURN NEW;
+    createdBy = OLD.jsonb->'metadata'->>'createdByUserId';
+    createdDate = OLD.jsonb->'metadata'->>'createdDate';
+    createdByUsername = OLD.jsonb->'metadata'->>'createdByUsername';
+    updatedBy = NEW.jsonb->'metadata'->>'updatedByUserId';
+    updatedDate = NEW.jsonb->'metadata'->>'updatedDate';
+    updatedByUsername = NEW.jsonb->'metadata'->>'updatedByUsername';
+    injectedMetadata = jsonb_strip_nulls(
+        json_build_object(
+            'createdDate', to_char(createdDate,'YYYY-MM-DD"T"HH24:MI:SS.MSTZH:TZM'),
+            'createdByUserId', createdBy,
+            'createdByUsername', createdByUsername,
+            'updatedDate', to_char(updatedDate,'YYYY-MM-DD"T"HH24:MI:SS.MSTZH:TZM'),
+            'updatedByUserId', updatedBy,
+            'updatedByUsername', updatedByUsername
+        )::jsonb
+    );
+    NEW.jsonb = jsonb_set(NEW.jsonb, '{metadata}', injectedMetadata::jsonb, false);
+    RETURN NEW;
  END;
 $$
 language 'plpgsql';
