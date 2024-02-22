@@ -293,7 +293,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
       generateOptionIds(customField);
       List<String> optionIdsToDelete = getOptionsIdsToDelete(customField, oldCustomField);
       List<String> defaultIds = extractDefaultOptionIds(customField);
-      recordUpdate = new RecordUpdate(customField.getRefId(), optionIdsToDelete, defaultIds);
+      recordUpdate = new RecordUpdate(customField, optionIdsToDelete, defaultIds);
     }
     return recordUpdate;
   }
