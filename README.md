@@ -1,6 +1,6 @@
 # folio-custom-fields
 
-Copyright (C) 2019-2023 The Open Library Foundation
+Copyright (C) 2019-2024 The Open Library Foundation
 
 This software is distributed under the terms of the Apache License,
 Version 2.0. See the file "[LICENSE](LICENSE)" for more information.
@@ -93,6 +93,58 @@ Please note that indicated module version and ModuleDescriptor.json file serve i
    ~~~~ 
   The permission name inside of the `permissionsRequired` section can be modified to represent the module purpose.
   See [mod-users](https://github.com/folio-org/mod-users/pull/136/files) as an example of `folio-custom-fields` integration.
+
+## RecordService
+
+The [`RecordService`](src/main/java/org/folio/service/RecordService.java) is responsible for updating entities when
+custom fields are updated. This means that whenever a custom field is modified, the `RecordService` ensures that these
+changes are reflected in the corresponding entities. Additionally, the `RecordService` provides statistics on how 
+many entities are using a particular custom field or option.
+
+Two different implementations of the `RecordService` interface are available:
+
+By default the [`NoOpRecordService`](src/main/java/org/folio/service/NoOpRecordService.java) is used. This is a basic 
+implementation of the `RecordService` that does not update any entities and returns statistics with zero counts.
+
+The [`RecordServiceImpl`](src/main/java/org/folio/service/RecordServiceImpl.java) implementation does update 
+entities and returns statistics based on the actual usage of custom fields or their options. It can be configured to 
+support multiple tables for each `entityType`.
+
+To use the `RecordServiceImpl`, follow these steps:
+
+1. Implement the `RecordServiceFactory` interface to return a new instance of the 
+   `RecordServiceImpl` implementation with the specified entity types and tables. The map takes 
+   entity types as key and the corresponding table name as value.
+
+    ```java
+    package org.folio.services.record;
+    
+    import io.vertx.core.Vertx;
+    import java.util.Map;
+    import org.folio.service.RecordService;
+    import org.folio.service.RecordServiceImpl;
+    import org.folio.service.spi.RecordServiceFactory;
+    
+    public class RecordServiceFactoryImpl implements RecordServiceFactory {
+    
+      @Override
+      public RecordService create(Vertx vertx) {
+        return RecordServiceImpl.createForSingleTable(
+          vertx, Map.of("po_line", "po_line", "purchase_order", "purchase_order"));
+      }
+    }
+    ```
+
+2. Make the implementation available by updating the `META-INF/services/org.folio.service.
+   RecordServiceFactory` file to contain the fully qualified name of the implementation class
+  
+    ```
+    org.folio.services.record.RecordServiceFactoryImpl
+    ```
+
+If neither of the above implementations are suitable, the steps above can also be followed to use a 
+different implementation.
+
 ## Issue tracker
 
 See project [FCFIELDS](https://issues.folio.org/browse/FCFIELDS)
