@@ -102,7 +102,7 @@ public class NoOpRecordServiceTest {
 
   @Test
   public void shouldReturnSuccessOnDeleteMissedOptionValues() {
-    RecordUpdate recordUpdate = new RecordUpdate(field.getRefId(), Collections.emptyList(), Collections.emptyList());
+    RecordUpdate recordUpdate = new RecordUpdate(field, Collections.emptyList(), Collections.emptyList());
     Future<Void> res = service.deleteMissedOptionValues(recordUpdate, tenantId);
 
     assertNotNull(res);
