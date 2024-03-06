@@ -11,11 +11,13 @@ import io.vertx.sqlclient.Tuple;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.folio.model.RecordUpdate;
 import org.folio.rest.jaxrs.model.CustomField;
 import org.folio.rest.jaxrs.model.CustomFieldOptionStatistic;
 import org.folio.rest.jaxrs.model.CustomFieldStatistic;
+import org.folio.rest.jaxrs.model.SelectField;
 import org.folio.rest.persist.PostgresClient;
 
 public class RecordServiceImpl implements RecordService {
@@ -71,9 +73,7 @@ public class RecordServiceImpl implements RecordService {
             Promise<RowSet<Row>> replyHandler = Promise.promise();
             PostgresClient.getInstance(vertx, tenantId)
               .select(
-                "SELECT COUNT(*) FROM "
-                  + tableName
-                  + " WHERE jsonb->'customFields'->$1 IS NOT NULL",
+                "SELECT COUNT(*) FROM " + tableName + " WHERE jsonb->'customFields' ? $1",
                 Tuple.of(field.getRefId()),
                 replyHandler);
             return replyHandler
@@ -97,6 +97,8 @@ public class RecordServiceImpl implements RecordService {
   public Future<CustomFieldOptionStatistic> retrieveOptionStatistic(
     CustomField field, String optId, String tenantId) {
     List<String> tableNames = getTableNames(field.getEntityType());
+
+    String objectValue = isMultiSelect(field) ? "jsonb_build_array($2)" : "$2";
     List<Future<CustomFieldOptionStatistic>> futures =
       tableNames.stream()
         .map(
@@ -106,7 +108,7 @@ public class RecordServiceImpl implements RecordService {
               .select(
                 "SELECT COUNT(*) FROM "
                   + tableName
-                  + " WHERE jsonb->'customFields'->$1 ? $2",
+                  + " WHERE jsonb->'customFields' @> jsonb_build_object($1, " + objectValue + ")",
                 Tuple.of(field.getRefId(), optId),
                 replyHandler);
             return replyHandler
@@ -155,6 +157,11 @@ public class RecordServiceImpl implements RecordService {
     List<String> tableNames = getTableNames(cf.getEntityType());
     String opts = String.join(",", recordUpdate.getOptionIdsToDelete());
 
+    String objectValue =
+      isMultiSelect(recordUpdate.getCustomField())
+        ? "jsonb_build_array(value)"
+        : "value";
+
     List<Future<Void>> futures =
       tableNames.stream()
         .map(
@@ -180,7 +187,9 @@ public class RecordServiceImpl implements RecordService {
                   + "    )"
                   + "  )"
                   + ")"
-                  + "WHERE jsonb->'customFields'->$1 ?| string_to_array($2, ',')",
+                  + "WHERE jsonb->'customFields' @> ANY(ARRAY("
+                  + "  SELECT jsonb_build_object($1, " + objectValue + ")"
+                  + "  FROM unnest(string_to_array($2, ',')) AS value))",
                 Tuple.of(cf.getRefId(), opts),
                 replyHandler);
             return replyHandler.future().<Void>mapEmpty();
@@ -207,5 +216,12 @@ public class RecordServiceImpl implements RecordService {
 
   private List<String> getTableNames(String entityType) {
     return entityType != null ? entityTableMap.getOrDefault(entityType, emptyList()) : emptyList();
+  }
+
+  private boolean isMultiSelect(CustomField field) {
+    return Optional.ofNullable(field)
+      .map(CustomField::getSelectField)
+      .map(SelectField::getMultiSelect)
+      .orElse(false);
   }
 }

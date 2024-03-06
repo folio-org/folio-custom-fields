@@ -471,7 +471,10 @@ public class RecordServiceImplTest {
     SpringContextUtil.init(vertx, getFirstContextFromDeployments(), TestConfigSingleTable.class);
     CustomFieldOptionStatistic customFieldOptionStatistic =
       getCustomFieldOptionStatistic(customFieldsType1.get(1), "opt_1");
+    CustomFieldOptionStatistic customFieldOptionStatistic2 =
+      getCustomFieldOptionStatistic(customFieldsType1.get(2), "opt_2");
     assertThat(customFieldOptionStatistic.getCount()).isEqualTo(1);
+    assertThat(customFieldOptionStatistic2.getCount()).isEqualTo(2);
   }
 
   @Test
@@ -479,7 +482,10 @@ public class RecordServiceImplTest {
     SpringContextUtil.init(vertx, getFirstContextFromDeployments(), TestConfigMultiTable.class);
     CustomFieldOptionStatistic customFieldOptionStatistic =
       getCustomFieldOptionStatistic(customFieldsType1.get(1), "opt_1");
+    CustomFieldOptionStatistic customFieldOptionStatistic2 =
+      getCustomFieldOptionStatistic(customFieldsType1.get(2), "opt_2");
     assertThat(customFieldOptionStatistic.getCount()).isEqualTo(2);
+    assertThat(customFieldOptionStatistic2.getCount()).isEqualTo(3);
   }
 
   @Test
