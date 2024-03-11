@@ -134,14 +134,18 @@ To use the `RecordServiceImpl`, follow these steps:
       }
     }
     ```
-
 2. Make the implementation available by updating the `META-INF/services/org.folio.service.
    RecordServiceFactory` file to contain the fully qualified name of the implementation class
   
     ```
     org.folio.services.record.RecordServiceFactoryImpl
     ```
-
+3. Optional. For efficient data handling, add a GIN index on the `jsonb->'customFields'`
+   expression to each entity table.
+    ```sql
+    CREATE INDEX purchase_order_customfields_recordservice_idx_gin
+    ON ${myuniversity}_${mymodule}.purchase_order USING GIN ((jsonb->'customFields'));
+    ```
 If neither of the above implementations are suitable, the steps above can also be followed to use a 
 different implementation.
 
