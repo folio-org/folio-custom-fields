@@ -1,3 +1,6 @@
+## 2.1.0 2024-03-18
+* Update spring and folio-di-support versions.
+
 ## 2.0.0 2024-03-18
 * Attribute helpText of customField cannot be null ([FCFIELDS-43](https://issues.folio.org/browse/FCFIELDS-43))
 * 'undefined' metadata values causing validation errors ([FCFIELDS-47](https://issues.folio.org/browse/FCFIELDS-47))
