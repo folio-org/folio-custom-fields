@@ -1,3 +1,14 @@
+## 2.0.0 2024-03-18
+* Attribute helpText of customField cannot be null ([FCFIELDS-43](https://issues.folio.org/browse/FCFIELDS-43))
+* 'undefined' metadata values causing validation errors ([FCFIELDS-47](https://issues.folio.org/browse/FCFIELDS-47))
+* Custom Field Input Type: Date Picker ([FCFIELDS-46](https://issues.folio.org/browse/FCFIELDS-46))
+* Enhance RecordUpdate entity with updated custom field info ([FCFIELDS-48](https://issues.folio.org/browse/FCFIELDS-48))
+* Provide useful message in CustomFieldValidationException ([FCFIELDS-49](https://issues.folio.org/browse/FCFIELDS-49))
+* folio-custom-fields Quesnelia 2024 R1 - RMB v35.2.x update ([FCFIELDS-51](https://issues.folio.org/browse/FCFIELDS-51))
+* Provide a generic implementation for RecordService ([FCFIELDS-52](https://issues.folio.org/browse/FCFIELDS-52))
+* PUT /custom-fields does not handle multiple entity types ([FCFIELDS-44](https://issues.folio.org/browse/FCFIELDS-44))
+
+
 ## 1.10.0 2023-10-11
 * Logging improvement ([FCFIELDS-25](https://issues.folio.org/browse/FCFIELDS-25))
 * Mention required X-Okapi-Module-Id header in API docs ([FCFIELDS-37](https://issues.folio.org/browse/FCFIELDS-37))
