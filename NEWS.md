@@ -1,3 +1,6 @@
+## 2.2.0 2024-10-30
+* Upgrade rmb version to 35.3.0 ([FCFIELDS-55](https://issues.folio.org/browse/FCFIELDS-55))
+
 ## 2.1.0 2024-03-19
 * Update spring and folio-di-support versions.
 
