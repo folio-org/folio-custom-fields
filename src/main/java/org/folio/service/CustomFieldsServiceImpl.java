@@ -99,8 +99,8 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
       .compose(maxOrder -> {
         customField.setOrder(maxOrder + 1);
         return save(customField, params,
-                (unAccentName, tenantId) -> repository.maxRefId(unAccentName, params.getTenant(), (AsyncResult<SQLConnection>) null),
-                (customField1, tenantId) -> repository.save(customField1, params.getTenant(), (AsyncResult<SQLConnection>) null));
+                (unAccentName, tenantId) -> repository.maxRefId(unAccentName, params.getTenant()),
+                (customField1, tenantId) -> repository.save(customField1, params.getTenant()));
       });
   }
 
@@ -114,7 +114,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         customField.setId(oldCustomField.getId());
         customField.setOrder(oldCustomField.getOrder());
         return update(customField, oldCustomField, params,
-                (customFieldEntity, tenantId) -> repository.update(customFieldEntity, tenantId, (AsyncResult<SQLConnection>) null));
+                (customFieldEntity, tenantId) -> repository.update(customFieldEntity, tenantId));
       });
   }
 
