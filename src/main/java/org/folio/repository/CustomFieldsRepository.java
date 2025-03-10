@@ -2,6 +2,7 @@ package org.folio.repository;
 
 import java.util.Optional;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import io.vertx.core.AsyncResult;
@@ -9,6 +10,7 @@ import io.vertx.core.Future;
 
 import org.folio.rest.jaxrs.model.CustomField;
 import org.folio.rest.jaxrs.model.CustomFieldCollection;
+import org.folio.rest.persist.Conn;
 import org.folio.rest.persist.SQLConnection;
 
 public interface CustomFieldsRepository {
@@ -31,6 +33,9 @@ public interface CustomFieldsRepository {
    * @param connection - {@link SQLConnection} to use
    */
   Future<CustomField> save(CustomField entity, String tenantId, @Nullable AsyncResult<SQLConnection> connection);
+
+  Future<CustomField> save(CustomField entity, String tenantId,
+                           @Nullable Conn connection);
 
   /**
    * Fetches a custom field definition with given id
@@ -57,6 +62,9 @@ public interface CustomFieldsRepository {
    * @param connection      - {@link SQLConnection} to use
    */
   Future<Integer> maxRefId(String customFieldName, String tenantId, @Nullable AsyncResult<SQLConnection> connection);
+
+  Future<Integer> maxRefId(String customFieldName, String tenantId,
+                           @Nullable Conn connection);
 
   /**
    * Fetches the maximum value of "order" attribute in all custom fields,
@@ -94,6 +102,8 @@ public interface CustomFieldsRepository {
    */
   Future<Boolean> update(CustomField entity, String tenantId, @Nullable AsyncResult<SQLConnection> connection);
 
+  Future<Boolean> update(CustomField entity, String tenantId, @Nullable Conn connection);
+
   /**
    * Deletes custom field with given id.
    *
@@ -110,4 +120,6 @@ public interface CustomFieldsRepository {
    * @param connection - {@link SQLConnection} to use
    */
   Future<Boolean> delete(String id, String tenantId, @Nullable AsyncResult<SQLConnection> connection);
+
+  Future<Boolean> delete(String id, String tenantId, @Nonnull Conn connection);
 }
