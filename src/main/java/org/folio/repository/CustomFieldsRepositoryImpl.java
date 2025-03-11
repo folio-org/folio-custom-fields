@@ -47,7 +47,7 @@ public class CustomFieldsRepositoryImpl implements CustomFieldsRepository {
 
   @Override
   public Future<CustomField> save(CustomField entity, String tenantId) {
-    return save(entity, tenantId, (Conn) null);
+    return save(entity, tenantId, (AsyncResult<SQLConnection>) null);
   }
 
 
@@ -94,7 +94,7 @@ public class CustomFieldsRepositoryImpl implements CustomFieldsRepository {
 
   @Override
   public Future<Integer> maxRefId(String customFieldName, String tenantId) {
-    return maxRefId(customFieldName, tenantId, (Conn) null);
+    return maxRefId(customFieldName, tenantId, (AsyncResult<SQLConnection>) null);
   }
 
   @Override
@@ -143,7 +143,7 @@ public class CustomFieldsRepositoryImpl implements CustomFieldsRepository {
 
   @Override
   public Future<Boolean> update(CustomField entity, String tenantId) {
-    return update(entity, tenantId, (Conn) null);
+    return update(entity, tenantId, (AsyncResult<SQLConnection>) null);
   }
 
   @Override
@@ -172,7 +172,7 @@ public class CustomFieldsRepositoryImpl implements CustomFieldsRepository {
 
   @Override
   public Future<Boolean> delete(String id, String tenantId) {
-    return delete(id, tenantId, (Conn) null);
+    return delete(id, tenantId, (AsyncResult<SQLConnection>) null);
   }
 
   @Override
