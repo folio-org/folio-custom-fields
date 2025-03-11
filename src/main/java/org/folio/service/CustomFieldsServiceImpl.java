@@ -151,6 +151,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
   @Override
   public Future<List<CustomField>> replaceAll(
       List<CustomField> customFields, String entityType, OkapiParams params) {
+    log.info("putCustomFields:: replaceAll method called....");
     log.debug("replaceAll:: Attempt to replace all customFields by [tenantId: {}]", params.getTenant());
 
     String queryStr = String.format("query=(entityType==%s)", entityType);
