@@ -7,7 +7,6 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.reverseOrder;
 
-import static org.folio.db.DbUtils.executeInTransactionWithVertxFuture;
 import static org.folio.service.CustomFieldUtils.extractDefaultOptionIds;
 import static org.folio.service.CustomFieldUtils.extractOptionIds;
 import static org.folio.service.CustomFieldUtils.isSelectableCustomFieldType;
@@ -25,11 +24,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
 
 import com.google.common.collect.Sets;
 import io.vertx.core.AsyncResult;
@@ -40,6 +38,8 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import org.folio.rest.persist.Conn;
+import org.folio.rest.persist.PostgresClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.z3950.zing.cql.CQLDefaultNodeVisitor;
@@ -99,7 +99,9 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     return repository.maxOrder(params.getTenant())
       .compose(maxOrder -> {
         customField.setOrder(maxOrder + 1);
-        return save(customField, params, null);
+        return save(customField, params,
+                (unAccentName, tenantId) -> repository.maxRefId(unAccentName, params.getTenant()),
+                (customField1, tenantId) -> repository.save(customField1, params.getTenant()));
       });
   }
 
@@ -112,7 +114,8 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
       .compose(oldCustomField -> {
         customField.setId(oldCustomField.getId());
         customField.setOrder(oldCustomField.getOrder());
-        return update(customField, oldCustomField, params, null);
+        return update(customField, oldCustomField, params,
+                (customFieldEntity, tenantId) -> repository.update(customFieldEntity, tenantId));
       });
   }
 
@@ -161,23 +164,37 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         Set<String> fieldsToRemove = Sets.difference(existingFieldsMap.keySet(), newFieldsMap.keySet());
         Set<String> fieldsToUpdate = Sets.intersection(existingFieldsMap.keySet(), newFieldsMap.keySet());
         Set<String> fieldsToInsert = Sets.difference(newFieldsMap.keySet(), existingFieldsMap.keySet());
+        PostgresClient postgresClient = PostgresClient.getInstance(vertx, params.getTenant());
 
-        return executeInTransactionWithVertxFuture(params.getTenant(), vertx, (postgresClient, connection) ->
-          executeForEach(fieldsToRemove, id -> repository.delete(id, params.getTenant(), connection))
-            .compose(deleted ->
-              executeForEach(fieldsToUpdate,
-                id -> update(newFieldsMap.get(id), existingFieldsMap.get(id), params, connection)))
-            .compose(updateResult ->
-              executeForEach(fieldsToInsert, id -> save(newFieldsMap.get(id), params, connection)))
-        ).compose(o -> {
-            List<CustomField> deletedFields = fieldsToRemove.stream()
-              .map(existingFieldsMap::get)
-              .collect(Collectors.toList());
-            return executeForEach(deletedFields, field -> recordService.deleteAllValues(field, params.getTenant()));
-          }
-        )
-          .map(customFields);
+        return postgresClient.withTrans(connection -> removeFields(params, connection, fieldsToRemove)
+                .compose(x -> updateFields(params, connection, fieldsToUpdate, newFieldsMap, existingFieldsMap))
+                .compose(x -> insertFields(params, connection, fieldsToInsert, newFieldsMap)))
+                .compose(unused -> removeValues(params, fieldsToRemove, existingFieldsMap))
+                .map(customFields);
       });
+  }
+
+  private Future<Void> removeFields(OkapiParams params, Conn connection, Set<String> fieldsToRemove) {
+    return executeForEach(fieldsToRemove, id -> repository.delete(id, params.getTenant(), connection));
+  }
+
+  private Future<Void> updateFields(OkapiParams params, Conn connection, Set<String> fieldsToUpdate, Map<String, CustomField> newFieldsMap, Map<String, CustomField> existingFieldsMap) {
+    return executeForEach(fieldsToUpdate,
+            id -> update(newFieldsMap.get(id), existingFieldsMap.get(id), params,
+                    (customFieldEntity, tenantId) -> repository.update(customFieldEntity, tenantId, connection)));
+  }
+
+  private Future<Void> insertFields(OkapiParams params, Conn connection, Set<String> fieldsToInsert, Map<String, CustomField> newFieldsMap) {
+    return executeForEach(fieldsToInsert, id -> save(newFieldsMap.get(id), params,
+            (unAccentName, tenantId) -> repository.maxRefId(unAccentName, params.getTenant(), connection),
+            (customField, tenantId) -> repository.save(customField, params.getTenant(), connection)));
+  }
+
+  private Future<Void> removeValues(OkapiParams params, Set<String> fieldsToRemove, Map<String, CustomField> existingFieldsMap) {
+    List<CustomField> deletedFields = fieldsToRemove.stream()
+            .map(existingFieldsMap::get)
+            .collect(Collectors.toList());
+    return executeForEach(deletedFields, field -> recordService.deleteAllValues(field, params.getTenant()));
   }
 
   @Override
@@ -236,7 +253,8 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
   }
 
   private Future<CustomField> save(CustomField customField, OkapiParams params,
-                                   @Nullable AsyncResult<SQLConnection> connection) {
+                                    BiFunction<String, String, Future<Integer>> maxRefIdFunction,
+                                    BiFunction<CustomField, String, Future<CustomField>> dbSaveOperation) {
     final String unAccentName = unAccentName(customField.getName());
     setDefaultFormat(customField);
     if (isSelectableCustomFieldType(customField)) {
@@ -244,36 +262,36 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
       generateOptionIds(customField);
     }
     return populateCreator(customField, params)
-      .compose(o -> repository.maxRefId(unAccentName, params.getTenant(), connection))
-      .compose(maxRefId -> {
-        customField.setRefId(getCustomFieldRefId(unAccentName, maxRefId));
-        return repository.save(customField, params.getTenant(), connection);
-      });
+            .compose(o -> maxRefIdFunction.apply(unAccentName, params.getTenant()))
+            .compose(maxRefId -> {
+              customField.setRefId(getCustomFieldRefId(unAccentName, maxRefId));
+              return dbSaveOperation.apply(customField, params.getTenant());
+            });
   }
 
   private Future<Void> update(CustomField customField, CustomField oldCustomField, OkapiParams params,
-                              @Nullable AsyncResult<SQLConnection> connection) {
+                               BiFunction<CustomField, String, Future<Boolean>> dbUpdateOperation) {
     customField.setRefId(oldCustomField.getRefId());
     setDefaultFormat(customField);
 
     RecordUpdate recordUpdate = createRecordUpdate(customField, oldCustomField);
 
     Future<Void> validated = Validation.instance()
-      .addTest(customField.getType(), typeNotChanged(oldCustomField.getType()))
-      .addTest(customField, formatNotChanged(oldCustomField))
-      .validate();
+            .addTest(customField.getType(), typeNotChanged(oldCustomField.getType()))
+            .addTest(customField, formatNotChanged(oldCustomField))
+            .validate();
 
     return validated
-      .compose(o -> populateUpdater(customField, params))
-      .compose(o -> repository.update(customField, params.getTenant(), connection))
-      .compose(found -> failIfNotFound(found, customField.getId()))
-      .compose(aVoid -> {
-        if (isRequiredRecordUpdate(recordUpdate)) {
-          return recordService.deleteMissedOptionValues(recordUpdate, params.getTenant());
-        } else {
-          return Future.succeededFuture(aVoid);
-        }
-      });
+            .compose(o -> populateUpdater(customField, params))
+            .compose(o -> dbUpdateOperation.apply(customField, params.getTenant()))
+            .compose(found -> failIfNotFound(found, customField.getId()))
+            .compose(aVoid -> {
+              if (isRequiredRecordUpdate(recordUpdate)) {
+                return recordService.deleteMissedOptionValues(recordUpdate, params.getTenant());
+              } else {
+                return Future.succeededFuture(aVoid);
+              }
+            });
   }
 
   private void setDefaultFormat(CustomField customField) {
