@@ -38,6 +38,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import org.folio.rest.persist.Conn;
 import org.folio.rest.persist.PostgresClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -165,21 +166,35 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         Set<String> fieldsToInsert = Sets.difference(newFieldsMap.keySet(), existingFieldsMap.keySet());
         PostgresClient postgresClient = PostgresClient.getInstance(vertx, params.getTenant());
 
-        return postgresClient.withTrans(connection -> executeForEach(fieldsToRemove, id -> repository.delete(id, params.getTenant(), connection))
-                .compose(deleted ->
-                        executeForEach(fieldsToUpdate,
-                                id -> update(newFieldsMap.get(id), existingFieldsMap.get(id), params,
-                                        (customFieldEntity, tenantId) -> repository.update(customFieldEntity, tenantId, connection))))
-                .compose(updateResult ->
-                        executeForEach(fieldsToInsert, id -> save(newFieldsMap.get(id), params,
-                                (unAccentName, tenantId) -> repository.maxRefId(unAccentName, params.getTenant(), connection),
-                                (customField, tenantId) -> repository.save(customField, params.getTenant(), connection))))).compose(unused -> {
-          List<CustomField> deletedFields = fieldsToRemove.stream()
-                  .map(existingFieldsMap::get)
-                  .collect(Collectors.toList());
-          return executeForEach(deletedFields, field -> recordService.deleteAllValues(field, params.getTenant()));
-        }).map(customFields);
+        return postgresClient.withTrans(connection -> removeFields(params, connection, fieldsToRemove)
+                .compose(x -> updateFields(params, connection, fieldsToUpdate, newFieldsMap, existingFieldsMap))
+                .compose(x -> insertFields(params, connection, fieldsToInsert, newFieldsMap)))
+                .compose(unused -> removeValues(params, fieldsToRemove, existingFieldsMap))
+                .map(customFields);
       });
+  }
+
+  private Future<Void> removeFields(OkapiParams params, Conn connection, Set<String> fieldsToRemove) {
+    return executeForEach(fieldsToRemove, id -> repository.delete(id, params.getTenant(), connection));
+  }
+
+  private Future<Void> updateFields(OkapiParams params, Conn connection, Set<String> fieldsToUpdate, Map<String, CustomField> newFieldsMap, Map<String, CustomField> existingFieldsMap) {
+    return executeForEach(fieldsToUpdate,
+            id -> update(newFieldsMap.get(id), existingFieldsMap.get(id), params,
+                    (customFieldEntity, tenantId) -> repository.update(customFieldEntity, tenantId, connection)));
+  }
+
+  private Future<Void> insertFields(OkapiParams params, Conn connection, Set<String> fieldsToInsert, Map<String, CustomField> newFieldsMap) {
+    return executeForEach(fieldsToInsert, id -> save(newFieldsMap.get(id), params,
+            (unAccentName, tenantId) -> repository.maxRefId(unAccentName, params.getTenant(), connection),
+            (customField, tenantId) -> repository.save(customField, params.getTenant(), connection)));
+  }
+
+  private Future<Void> removeValues(OkapiParams params, Set<String> fieldsToRemove, Map<String, CustomField> existingFieldsMap) {
+    List<CustomField> deletedFields = fieldsToRemove.stream()
+            .map(existingFieldsMap::get)
+            .collect(Collectors.toList());
+    return executeForEach(deletedFields, field -> recordService.deleteAllValues(field, params.getTenant()));
   }
 
   @Override
