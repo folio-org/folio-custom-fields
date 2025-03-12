@@ -11,7 +11,7 @@ import static org.folio.repository.CustomFieldsConstants.WHERE_ID_EQUALS_CLAUSE;
 
 import java.util.Optional;
 import java.util.UUID;
-
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import io.vertx.core.AsyncResult;
@@ -47,90 +47,54 @@ public class CustomFieldsRepositoryImpl implements CustomFieldsRepository {
 
   @Override
   public Future<CustomField> save(CustomField entity, String tenantId) {
-    return save(entity, tenantId, (AsyncResult<SQLConnection>) null);
-  }
-
-
-  @Override
-  public Future<CustomField> save(CustomField entity, String tenantId,
-                                  @Nullable AsyncResult<SQLConnection> connection) {
-    if (connection == null) {
-      return save(entity, tenantId, (Conn) null);
-    }
-    return pgClient(tenantId).withConn(connection, conn -> save(entity, tenantId, conn));
+    return pgClient(tenantId).withConn(conn -> save(entity, conn));
   }
 
   @Override
-  public Future<CustomField> save(CustomField entity, String tenantId, @Nullable Conn connection) {
+  public Future<CustomField> save(CustomField entity, @Nonnull Conn connection) {
     log.debug("Saving a custom field with id: {}.", entity.getId());
 
     setIdIfMissing(entity);
-    if (connection != null) {
-      return connection.save(CUSTOM_FIELDS_TABLE, entity.getId(), entity).map(id -> {
-        entity.setId(id);
-        return entity;
-      }).recover(excTranslator.translateOrPassBy());
-    }
-
-    Promise<String> promise = Promise.promise();
-    pgClient(tenantId).save(CUSTOM_FIELDS_TABLE, entity.getId(), entity, promise);
-    return promise.future().map(id -> {
-      entity.setId(id);
-      return entity;
-    }).recover(excTranslator.translateOrPassBy());
+    return connection.save(CUSTOM_FIELDS_TABLE, entity.getId(), entity)
+        .map(id -> {
+          entity.setId(id);
+          return entity;
+        }).recover(excTranslator.translateOrPassBy());
   }
-
 
   @Override
   public Future<Optional<CustomField>> findById(String id, String tenantId) {
-    Promise<CustomField> promise = Promise.promise();
     log.debug("Getting a custom field with id: {}.", id);
-    pgClient(tenantId).getById(CUSTOM_FIELDS_TABLE, id, CustomField.class, promise);
-
-    return promise.future().map(Optional::ofNullable)
-      .recover(excTranslator.translateOrPassBy());
+    return pgClient(tenantId).getById(CUSTOM_FIELDS_TABLE, id, CustomField.class)
+        .map(Optional::ofNullable)
+        .recover(excTranslator.translateOrPassBy());
   }
 
 
   @Override
   public Future<Integer> maxRefId(String customFieldName, String tenantId) {
-    return maxRefId(customFieldName, tenantId, (AsyncResult<SQLConnection>) null);
+    return pgClient(tenantId).withConn(conn -> maxRefId(customFieldName, tenantId, conn));
   }
 
   @Override
-  public Future<Integer> maxRefId(String customFieldName, String tenantId, @Nullable AsyncResult<SQLConnection> connection) {
-    if (connection == null) {
-      return maxRefId(customFieldName, tenantId, (Conn) null);
-    }
-    return pgClient(tenantId).withConn(connection, conn -> maxRefId(customFieldName, tenantId, conn));
-  }
-
-  @Override
-  public Future<Integer> maxRefId(String customFieldName, String tenantId, @Nullable Conn connection) {
+  public Future<Integer> maxRefId(String customFieldName, String tenantId, @Nonnull Conn connection) {
     log.debug("Getting custom field ref ids by given name: {}.", customFieldName);
     String query = String.format(SELECT_REF_IDS, getCFTableName(tenantId));
     String refIdRegex = String.format(REF_ID_REGEX, customFieldName);
     Tuple parameters = Tuple.of(refIdRegex);
 
-    if (connection != null) {
-      return connection.execute(query, parameters).map(this::mapMaxRefId)
-              .recover(excTranslator.translateOrPassBy());
-    }
-
-    Promise<RowSet<Row>> promise = Promise.promise();
-    pgClient(tenantId).select(query, parameters, promise);
-    return promise.future().map(this::mapMaxRefId)
-            .recover(excTranslator.translateOrPassBy());
+    return connection.execute(query, parameters)
+        .map(this::mapMaxRefId)
+        .recover(excTranslator.translateOrPassBy());
   }
 
   @Override
   public Future<Integer> maxOrder(String tenantId) {
-    Promise<Row> promise = Promise.promise();
     final String query = String.format(SELECT_MAX_ORDER, getCFTableName(tenantId));
     log.debug("Getting maximum order of custom fields.");
-    pgClient(tenantId).selectSingle(query, promise);
-    return promise.future().map(this::mapMaxOrder)
-      .recover(excTranslator.translateOrPassBy());
+    return pgClient(tenantId).selectSingle(query)
+        .map(this::mapMaxOrder)
+        .recover(excTranslator.translateOrPassBy());
   }
 
   @Override
@@ -143,59 +107,29 @@ public class CustomFieldsRepositoryImpl implements CustomFieldsRepository {
 
   @Override
   public Future<Boolean> update(CustomField entity, String tenantId) {
-    return update(entity, tenantId, (AsyncResult<SQLConnection>) null);
+    return pgClient(tenantId).withConn(conn -> update(entity, conn));
   }
 
   @Override
-  public Future<Boolean> update(CustomField entity, String tenantId, @Nullable AsyncResult<SQLConnection> connection) {
-    if (connection == null) {
-      return update(entity, tenantId, (Conn) null);
-    }
-    return pgClient(tenantId).withConn(connection, conn -> update(entity, tenantId, conn));
-  }
-
-  @Override
-  public Future<Boolean> update(CustomField entity, String tenantId, @Nullable Conn connection) {
+  public Future<Boolean> update(CustomField entity, @Nonnull Conn connection) {
     log.debug("Updating a custom field with id: {}.", entity.getId());
 
-    if (connection != null) {
-      return connection.update(CUSTOM_FIELDS_TABLE, entity, entity.getId())
-              .map(rowSet -> rowSet.rowCount() == 1)
-              .recover(excTranslator.translateOrPassBy());
-    }
-
-    Promise<RowSet<Row>> promise = Promise.promise();
-    pgClient(tenantId).update(CUSTOM_FIELDS_TABLE, entity, entity.getId(), promise);
-    return promise.future().map(rowSet -> rowSet.rowCount() == 1)
-            .recover(excTranslator.translateOrPassBy());
+    return connection.update(CUSTOM_FIELDS_TABLE, entity, entity.getId())
+        .map(rowSet -> rowSet.rowCount() == 1)
+        .recover(excTranslator.translateOrPassBy());
   }
 
   @Override
   public Future<Boolean> delete(String id, String tenantId) {
-    return delete(id, tenantId, (AsyncResult<SQLConnection>) null);
+    return pgClient(tenantId).withConn(conn -> delete(id, conn));
   }
 
   @Override
-  public Future<Boolean> delete(String id, String tenantId, @Nullable AsyncResult<SQLConnection> connection) {
-    if (connection == null) {
-      return delete(id, tenantId, (Conn) null);
-    }
-    return pgClient(tenantId).withConn(connection, conn -> delete(id, tenantId, conn));
-  }
-
-  @Override
-  public Future<Boolean> delete(String id, String tenantId, @Nullable Conn connection) {
+  public Future<Boolean> delete(String id, @Nonnull Conn connection) {
     log.debug("Deleting custom field by given id: {}.", id);
-
-    if (connection != null) {
-      return connection.delete(CUSTOM_FIELDS_TABLE, id).map(rowSet -> rowSet.rowCount() == 1)
-              .recover(excTranslator.translateOrPassBy());
-    }
-
-    Promise<RowSet<Row>> promise = Promise.promise();
-    pgClient(tenantId).delete(CUSTOM_FIELDS_TABLE, id, promise);
-    return promise.future().map(rowSet -> rowSet.rowCount() == 1)
-            .recover(excTranslator.translateOrPassBy());
+    return connection.delete(CUSTOM_FIELDS_TABLE, id)
+        .map(rowSet -> rowSet.rowCount() == 1)
+        .recover(excTranslator.translateOrPassBy());
   }
 
   private Integer mapMaxRefId(RowSet<Row> rowSet) {
