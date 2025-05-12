@@ -1,3 +1,7 @@
+## 2.3.1 2025-05-12
+* replaceAll: remove values in transaction ([FCFIELDS-61](https://folio-org.atlassian.net/browse/FCFIELDS-61))
+* Remove SQL injection "WHERE id='%s'" ([FCFIELDS-62](https://folio-org.atlassian.net/browse/FCFIELDS-62))
+
 ## 2.3.0 2025-03-12
 * Added logs for debugging ([#56](https://github.com/folio-org/folio-custom-fields/pull/56))
 * Update to folio-custom-fields Java 21 ([FOLIO-4230](https://folio-org.atlassian.net/browse/FOLIO-4230))
