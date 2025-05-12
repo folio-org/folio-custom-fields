@@ -1,10 +1,8 @@
 package org.folio.repository;
 
 import java.util.Optional;
+import javax.annotation.Nonnull;
 
-import javax.annotation.Nullable;
-
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 
 import org.folio.rest.jaxrs.model.CustomField;
@@ -28,12 +26,9 @@ public interface CustomFieldsRepository {
    * Returns newly created custom field.
    *
    * @param entity     - current definition of the custom field {@link CustomField} object to save
-   * @param tenantId   - tenant id
-   * @param connection - {@link SQLConnection} to use
+   * @param connection - {@link Conn} to use
    */
-  Future<CustomField> save(CustomField entity, String tenantId, @Nullable AsyncResult<SQLConnection> connection);
-
-  Future<CustomField> save(CustomField entity, String tenantId, Conn connection);
+  Future<CustomField> save(CustomField entity, @Nonnull Conn connection);
 
   /**
    * Fetches a custom field definition with given id
@@ -52,16 +47,7 @@ public interface CustomFieldsRepository {
    */
   Future<Integer> maxRefId(String customFieldName, String tenantId);
 
-  /**
-   * Fetches the maximum custom field reference id by given custom field name.
-   *
-   * @param customFieldName - name of custom field
-   * @param tenantId        - tenant id
-   * @param connection      - {@link SQLConnection} to use
-   */
-  Future<Integer> maxRefId(String customFieldName, String tenantId, @Nullable AsyncResult<SQLConnection> connection);
-
-  Future<Integer> maxRefId(String customFieldName, String tenantId, Conn connection);
+  Future<Integer> maxRefId(String customFieldName, String tenantId, @Nonnull Conn connection);
 
   /**
    * Fetches the maximum value of "order" attribute in all custom fields,
@@ -95,11 +81,9 @@ public interface CustomFieldsRepository {
    *
    * @param entity     - entity to update
    * @param tenantId   - tenant id
-   * @param connection - {@link SQLConnection} to use
+   * @param connection - {@link Conn} to use
    */
-  Future<Boolean> update(CustomField entity, String tenantId, @Nullable AsyncResult<SQLConnection> connection);
-
-  Future<Boolean> update(CustomField entity, String tenantId, Conn connection);
+  Future<Boolean> update(CustomField entity, @Nonnull Conn connection);
 
   /**
    * Deletes custom field with given id.
@@ -113,10 +97,7 @@ public interface CustomFieldsRepository {
    * Deletes custom field with given id.
    *
    * @param id         - id of custom field to delete
-   * @param tenantId   - tenant id
    * @param connection - {@link SQLConnection} to use
    */
-  Future<Boolean> delete(String id, String tenantId, @Nullable AsyncResult<SQLConnection> connection);
-
-  Future<Boolean> delete(String id, String tenantId, Conn connection);
+  Future<Boolean> delete(String id, @Nonnull Conn connection);
 }
