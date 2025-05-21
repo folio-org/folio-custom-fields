@@ -167,8 +167,8 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
 
         return postgresClient.withTrans(connection -> removeFields(connection, fieldsToRemove)
                 .compose(x -> updateFields(params, connection, fieldsToUpdate, newFieldsMap, existingFieldsMap))
-                .compose(x -> insertFields(params, connection, fieldsToInsert, newFieldsMap)))
-                .compose(unused -> removeValues(params, fieldsToRemove, existingFieldsMap))
+                .compose(x -> insertFields(params, connection, fieldsToInsert, newFieldsMap))
+                .compose(unused -> removeValues(params, fieldsToRemove, existingFieldsMap)))
                 .map(customFields);
       });
   }

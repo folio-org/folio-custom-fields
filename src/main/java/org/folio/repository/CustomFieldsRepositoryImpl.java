@@ -1,13 +1,11 @@
 package org.folio.repository;
 
 import static org.folio.repository.CustomFieldsConstants.CUSTOM_FIELDS_TABLE;
-import static org.folio.repository.CustomFieldsConstants.JSONB_COLUMN;
 import static org.folio.repository.CustomFieldsConstants.MAX_ORDER_COLUMN;
 import static org.folio.repository.CustomFieldsConstants.REF_ID_REGEX;
 import static org.folio.repository.CustomFieldsConstants.SELECT_MAX_ORDER;
 import static org.folio.repository.CustomFieldsConstants.SELECT_REF_IDS;
 import static org.folio.repository.CustomFieldsConstants.VALUES_COLUMN;
-import static org.folio.repository.CustomFieldsConstants.WHERE_ID_EQUALS_CLAUSE;
 
 import java.util.Optional;
 import java.util.UUID;
