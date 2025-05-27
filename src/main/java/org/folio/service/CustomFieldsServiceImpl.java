@@ -30,7 +30,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Sets;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -59,7 +58,6 @@ import org.folio.rest.jaxrs.model.CustomFieldStatistic;
 import org.folio.rest.jaxrs.model.SelectFieldOption;
 import org.folio.rest.jaxrs.model.SelectFieldOptions;
 import org.folio.rest.jaxrs.model.TextField;
-import org.folio.rest.persist.SQLConnection;
 import org.folio.rest.validate.Validation;
 import org.folio.service.exc.InvalidFieldValueException;
 import org.folio.service.exc.ServiceExceptions;
@@ -167,7 +165,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         Set<String> fieldsToInsert = Sets.difference(newFieldsMap.keySet(), existingFieldsMap.keySet());
         PostgresClient postgresClient = PostgresClient.getInstance(vertx, params.getTenant());
 
-        return postgresClient.withTrans(connection -> removeFields(params, connection, fieldsToRemove)
+        return postgresClient.withTrans(connection -> removeFields(connection, fieldsToRemove)
                 .compose(x -> updateFields(params, connection, fieldsToUpdate, newFieldsMap, existingFieldsMap))
                 .compose(x -> insertFields(params, connection, fieldsToInsert, newFieldsMap))
                 .compose(unused -> removeValues(params, fieldsToRemove, existingFieldsMap)))
@@ -175,20 +173,20 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
       });
   }
 
-  private Future<Void> removeFields(OkapiParams params, Conn connection, Set<String> fieldsToRemove) {
-    return executeForEach(fieldsToRemove, id -> repository.delete(id, params.getTenant(), connection));
+  private Future<Void> removeFields(Conn connection, Set<String> fieldsToRemove) {
+    return executeForEach(fieldsToRemove, id -> repository.delete(id, connection));
   }
 
   private Future<Void> updateFields(OkapiParams params, Conn connection, Set<String> fieldsToUpdate, Map<String, CustomField> newFieldsMap, Map<String, CustomField> existingFieldsMap) {
     return executeForEach(fieldsToUpdate,
             id -> update(newFieldsMap.get(id), existingFieldsMap.get(id), params,
-                    (customFieldEntity, tenantId) -> repository.update(customFieldEntity, tenantId, connection)));
+                    (customFieldEntity, tenantId) -> repository.update(customFieldEntity, connection)));
   }
 
   private Future<Void> insertFields(OkapiParams params, Conn connection, Set<String> fieldsToInsert, Map<String, CustomField> newFieldsMap) {
     return executeForEach(fieldsToInsert, id -> save(newFieldsMap.get(id), params,
             (unAccentName, tenantId) -> repository.maxRefId(unAccentName, params.getTenant(), connection),
-            (customField, tenantId) -> repository.save(customField, params.getTenant(), connection)));
+            (customField, tenantId) -> repository.save(customField, connection)));
   }
 
   private Future<Void> removeValues(OkapiParams params, Set<String> fieldsToRemove, Map<String, CustomField> existingFieldsMap) {
