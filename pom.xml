@@ -102,6 +102,13 @@
       <groupId>commons-validator</groupId>
       <artifactId>commons-validator</artifactId>
       <version>${commons-validator.version}</version>
+      <exclusions>
+        <exclusion>
+          <!-- commons-beanutils before 1.11.0 is vulnerable: https://lists.apache.org/thread/s0hb3jkfj5f3ryx6c57zqtfohb0of1g9 -->
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
