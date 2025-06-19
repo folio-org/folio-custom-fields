@@ -17,7 +17,8 @@ final class AllowedFieldsConstants {
     "isRepeatable",
     "order",
     "helpText",
-    "metadata"
+    "metadata",
+    "displayInAccordion"
   );
 
   static final Set<String> CHECKBOX_ALLOWED_FIELDS = new ImmutableSet.Builder<String>()

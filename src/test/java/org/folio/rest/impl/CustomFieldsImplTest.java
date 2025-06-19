@@ -97,6 +97,14 @@ public class CustomFieldsImplTest extends TestBase {
   }
 
   @Test
+  public void postDisplayInAccordion() throws IOException, URISyntaxException {
+    var customFieldJson = readFile("fields/post/textbox/postDisplayInAccordion.json");
+    CustomField customField = createCustomField(customFieldJson);
+    assertNotNull(customField.getTextField());
+    assertEquals(TextField.FieldFormat.EMAIL, customField.getTextField().getFieldFormat());
+  }
+
+  @Test
   public void shouldCreateTwoRefIdOnPostCustomFieldWithSameName() throws IOException, URISyntaxException {
     CustomField cfWithAccentName1 = createCustomField(readFile("fields/post/postCustomFieldWithAccentName.json"));
     CustomField cfWithAccentName2 = createCustomField(readFile("fields/post/postCustomFieldWithAccentNameSecond.json"));
@@ -189,6 +197,14 @@ public class CustomFieldsImplTest extends TestBase {
     String customField = readFile("fields/post/postInvalidCustomField.json");
     String error = postWithStatus(CUSTOM_FIELDS_PATH, customField, SC_BAD_REQUEST).asString();
     assertThat(error, containsString("Cannot construct instance"));
+  }
+
+  @Test
+  public void shouldReturnErrorIfInvalidDisplayInAccordionValueProvided() throws IOException, URISyntaxException {
+    String customField = readFile("fields/post/invalidDisplayInAccordionValue.json");
+    String error = postWithStatus(CUSTOM_FIELDS_PATH, customField, SC_UNPROCESSABLE_ENTITY).asString();
+    assertThat(error, containsString("'default' value is not allowed for displayInAccordion, " +
+      "only the following values are allowed for entity type 'item': []"));
   }
 
   @Test
