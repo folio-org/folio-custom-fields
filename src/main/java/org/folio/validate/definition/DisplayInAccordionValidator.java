@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableSet;
 @Component
 public class DisplayInAccordionValidator implements Validatable {
 
-  private final Map<String, Set<CustomField.DisplayInAccordion>> allowedValuesByTypeMap =
+  private static final Map<String, Set<CustomField.DisplayInAccordion>> ALLOWED_VALUES_BY_TYPE_MAP =
     ImmutableMap.<String, Set<CustomField.DisplayInAccordion>>builder()
       .put("user", ImmutableSet.<CustomField.DisplayInAccordion>builder()
         .add(CustomField.DisplayInAccordion.USER_INFORMATION)
@@ -32,7 +32,7 @@ public class DisplayInAccordionValidator implements Validatable {
   public void validateDefinition(CustomField fieldDefinition) {
     var value = fieldDefinition.getDisplayInAccordion();
     var entityType = fieldDefinition.getEntityType();
-    var allowedValues = allowedValuesByTypeMap.getOrDefault(entityType, emptySet());
+    var allowedValues = ALLOWED_VALUES_BY_TYPE_MAP.getOrDefault(entityType, emptySet());
     isTrue(allowedValues.contains(value),
       "'%s' value is not allowed for displayInAccordion, " +
         "only the following values are allowed for entity type '%s': %s",

@@ -1,15 +1,14 @@
 package org.folio.validate.definition;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import org.folio.rest.jaxrs.model.CustomField;
 import org.folio.rest.jaxrs.model.CustomField.DisplayInAccordion;
 import org.folio.spring.TestConfiguration;
 import org.folio.test.util.TestUtil;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -20,7 +19,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class DisplayInAccordionValidatorTest {
 
   @Autowired private DisplayInAccordionValidator validator;
-  @Rule public ExpectedException expectedEx = ExpectedException.none();
 
   @Test
   public void shouldPassForValidField() {
@@ -32,13 +30,13 @@ public class DisplayInAccordionValidatorTest {
 
   @Test
   public void shouldFailOnUnknownField() {
-    expectedEx.expect(IllegalArgumentException.class);
-    expectedEx.expectMessage("'default' value is not allowed for displayInAccordion, " +
-      "only the following values are allowed for entity type 'unknown': []");
+    var expectedMessage = "'default' value is not allowed for displayInAccordion, " +
+      "only the following values are allowed for entity type 'unknown': []";
     var customField = customField("unknown", DisplayInAccordion.DEFAULT);
 
     assertTrue(validator.isApplicable(customField));
-    validator.validateDefinition(customField);
+    assertThrows(expectedMessage, IllegalArgumentException.class,
+      () -> validator.validateDefinition(customField));
   }
 
   @Test
