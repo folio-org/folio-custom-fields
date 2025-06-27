@@ -200,14 +200,6 @@ public class CustomFieldsImplTest extends TestBase {
   }
 
   @Test
-  public void shouldReturnErrorIfInvalidDisplayInAccordionValueProvided() throws IOException, URISyntaxException {
-    String customField = readFile("fields/post/invalidDisplayInAccordionValue.json");
-    String error = postWithStatus(CUSTOM_FIELDS_PATH, customField, SC_UNPROCESSABLE_ENTITY).asString();
-    assertThat(error, containsString("'default' value is not allowed for displayInAccordion, " +
-      "only the following values are allowed for entity type 'item': []"));
-  }
-
-  @Test
   public void shouldReturn401WhenNoUserHeader() throws IOException, URISyntaxException {
     String customField = readFile("fields/post/postCustomFieldHalfName.json");
     String error = postWithStatus(CUSTOM_FIELDS_PATH, customField, SC_UNAUTHORIZED).asString();

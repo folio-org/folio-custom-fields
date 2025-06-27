@@ -78,16 +78,7 @@
     },
     "displayInAccordion": {
       "type": "string",
-      "description": "Display in accordion type names for user entity type",
-      "enum": [
-        "user_information",
-        "extended_information",
-        "contact_information",
-        "default",
-        "fees_fines",
-        "loans",
-        "requests"
-      ]
+      "description": "Display in accordion type names for user entity type"
     },
     "metadata": {
       "description": "User metadata information",
