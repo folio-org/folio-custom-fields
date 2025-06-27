@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "string",
+  "description": "Display in accordion type names for user entity type",
+  "enum": [
+    "user_information",
+    "extended_information",
+    "contact_information",
+    "default",
+    "fees_fines",
+    "loans",
+    "requests"
+  ]
+}
