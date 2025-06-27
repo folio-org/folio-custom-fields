@@ -1,5 +1,6 @@
 package org.folio.validate.definition;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -35,14 +36,14 @@ public class DisplayInAccordionValidatorTest {
     var customField = customField("unknown", DisplayInAccordion.DEFAULT);
 
     assertTrue(validator.isApplicable(customField));
-    assertThrows(expectedMessage, IllegalArgumentException.class,
+    var throwable = assertThrows(IllegalArgumentException.class,
       () -> validator.validateDefinition(customField));
+    assertEquals(expectedMessage, throwable.getMessage());
   }
 
   @Test
-  public void shouldSkipCustomFieldWithoutRequiredField() throws Exception {
-    final CustomField customField = TestUtil.readJsonFile(
-      "fields/post/postCustomNameWithTooLongName.json", CustomField.class);
+  public void shouldSkipCustomFieldWithoutRequiredField() {
+    var customField = new CustomField();
     assertFalse(validator.isApplicable(customField));
   }
 
