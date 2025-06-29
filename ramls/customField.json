@@ -78,7 +78,7 @@
     },
     "displayInAccordion": {
       "type": "string",
-      "description": "Display in accordion type names for user entity type"
+      "description": "Display in accordion names for the custom field"
     },
     "metadata": {
       "description": "User metadata information",

@@ -100,8 +100,8 @@ public class CustomFieldsImplTest extends TestBase {
   public void postDisplayInAccordion() throws IOException, URISyntaxException {
     var customFieldJson = readFile("fields/post/textbox/postDisplayInAccordion.json");
     CustomField customField = createCustomField(customFieldJson);
-    assertNotNull(customField.getTextField());
-    assertEquals(TextField.FieldFormat.EMAIL, customField.getTextField().getFieldFormat());
+    assertNotNull(customField.getDisplayInAccordion());
+    assertEquals("fees_fines", customField.getDisplayInAccordion());
   }
 
   @Test
