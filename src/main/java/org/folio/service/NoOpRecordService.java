@@ -8,6 +8,7 @@ import org.folio.model.RecordUpdate;
 import org.folio.rest.jaxrs.model.CustomField;
 import org.folio.rest.jaxrs.model.CustomFieldOptionStatistic;
 import org.folio.rest.jaxrs.model.CustomFieldStatistic;
+import org.folio.rest.persist.Conn;
 
 public final class NoOpRecordService implements RecordService {
 
@@ -34,6 +35,11 @@ public final class NoOpRecordService implements RecordService {
 
   @Override
   public Future<Void> deleteAllValues(CustomField field, String tenantId) {
+    return succeededFuture();
+  }
+
+  @Override
+  public Future<Void> deleteAllValues(Conn conn, CustomField field, String tenantId) {
     return succeededFuture();
   }
 

@@ -18,6 +18,7 @@ import org.folio.rest.jaxrs.model.CustomField;
 import org.folio.rest.jaxrs.model.CustomFieldOptionStatistic;
 import org.folio.rest.jaxrs.model.CustomFieldStatistic;
 import org.folio.rest.jaxrs.model.SelectField;
+import org.folio.rest.persist.Conn;
 import org.folio.rest.persist.PostgresClient;
 
 public class RecordServiceImpl implements RecordService {
@@ -133,22 +134,30 @@ public class RecordServiceImpl implements RecordService {
     List<String> tableNames = getTableNames(field.getEntityType());
     List<Future<Void>> futures =
       tableNames.stream()
-        .map(
-          tableName -> {
-            Promise<RowSet<Row>> replyHandler = Promise.promise();
-            PostgresClient.getInstance(vertx, tenantId)
-              .execute(
-                "UPDATE "
-                  + tableName
-                  + " "
-                  + "SET jsonb = jsonb_set(jsonb, '{customFields}', (jsonb->'customFields') - $1)"
-                  + "WHERE jsonb->'customFields' ? $1",
-                Tuple.of(field.getRefId()),
-                replyHandler);
-            return replyHandler.future().<Void>mapEmpty();
-          })
+        .map(tableName -> PostgresClient.getInstance(vertx, tenantId)
+            .withConn(conn -> deleteValue(conn, tableName, field.getRefId())))
         .toList();
     return Future.join(futures).mapEmpty();
+  }
+
+  @Override
+  public Future<Void> deleteAllValues(Conn conn, CustomField field, String tenantId) {
+    Future<Void> future = Future.succeededFuture();
+    for (var tableName : getTableNames(field.getEntityType())) {
+      future = future.compose(x -> deleteValue(conn, tableName, field.getRefId()));
+    }
+    return future;
+  }
+
+  private static Future<Void> deleteValue(Conn conn, String tableName, String refId) {
+    return conn.execute(
+            "UPDATE "
+              + tableName
+              + " "
+              + "SET jsonb = jsonb_set(jsonb, '{customFields}', (jsonb->'customFields') - $1) "
+              + "WHERE jsonb->'customFields' ? $1",
+            Tuple.of(refId))
+        .mapEmpty();
   }
 
   @Override
