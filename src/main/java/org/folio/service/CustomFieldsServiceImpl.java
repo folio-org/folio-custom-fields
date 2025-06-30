@@ -168,7 +168,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         return postgresClient.withTrans(connection -> removeFields(connection, fieldsToRemove)
                 .compose(x -> updateFields(params, connection, fieldsToUpdate, newFieldsMap, existingFieldsMap))
                 .compose(x -> insertFields(params, connection, fieldsToInsert, newFieldsMap))
-                .compose(unused -> removeValues(params, fieldsToRemove, existingFieldsMap)))
+                .compose(unused -> removeValues(params, connection, fieldsToRemove, existingFieldsMap)))
                 .map(customFields);
       });
   }
@@ -189,11 +189,13 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
             (customField, tenantId) -> repository.save(customField, connection)));
   }
 
-  private Future<Void> removeValues(OkapiParams params, Set<String> fieldsToRemove, Map<String, CustomField> existingFieldsMap) {
+  private Future<Void> removeValues(
+      OkapiParams params, Conn conn, Set<String> fieldsToRemove, Map<String, CustomField> existingFieldsMap) {
+
     List<CustomField> deletedFields = fieldsToRemove.stream()
             .map(existingFieldsMap::get)
             .collect(Collectors.toList());
-    return executeForEach(deletedFields, field -> recordService.deleteAllValues(field, params.getTenant()));
+    return executeForEach(deletedFields, field -> recordService.deleteAllValues(conn, field, params.getTenant()));
   }
 
   @Override
