@@ -97,6 +97,14 @@ public class CustomFieldsImplTest extends TestBase {
   }
 
   @Test
+  public void postDisplayInAccordion() throws IOException, URISyntaxException {
+    var customFieldJson = readFile("fields/post/textbox/postDisplayInAccordion.json");
+    CustomField customField = createCustomField(customFieldJson);
+    assertNotNull(customField.getDisplayInAccordion());
+    assertEquals("fees_fines", customField.getDisplayInAccordion());
+  }
+
+  @Test
   public void shouldCreateTwoRefIdOnPostCustomFieldWithSameName() throws IOException, URISyntaxException {
     CustomField cfWithAccentName1 = createCustomField(readFile("fields/post/postCustomFieldWithAccentName.json"));
     CustomField cfWithAccentName2 = createCustomField(readFile("fields/post/postCustomFieldWithAccentNameSecond.json"));

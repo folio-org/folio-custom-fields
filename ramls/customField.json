@@ -76,6 +76,10 @@
       "description": "Text field properties",
       "$ref": "textField.json"
     },
+    "displayInAccordion": {
+      "type": "string",
+      "description": "Display in accordion names for the custom field"
+    },
     "metadata": {
       "description": "User metadata information",
       "$ref": "raml-util/schemas/metadata.schema",
