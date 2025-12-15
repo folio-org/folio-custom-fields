@@ -1,3 +1,6 @@
+## 2.3.2 2025-12-16
+* Update to RMB 35.4.1, Vert.x 4.5.22 ([FCFIELDS-77](https://folio-org.atlassian.net/browse/FCFIELDS-77))
+
 ## 2.3.1 2025-05-12
 * replaceAll: remove values in transaction ([FCFIELDS-61](https://folio-org.atlassian.net/browse/FCFIELDS-61))
 * Remove SQL injection "WHERE id='%s'" ([FCFIELDS-62](https://folio-org.atlassian.net/browse/FCFIELDS-62))
