@@ -1,3 +1,6 @@
+## 2.2.1 2025-12-16
+* Update to RMB 35.3.1, Vert.x 4.5.22 ([FCFIELDS-76](https://folio-org.atlassian.net/browse/FCFIELDS-76))
+
 ## 2.2.0 2024-10-30
 * Upgrade rmb version to 35.3.0 ([FCFIELDS-55](https://issues.folio.org/browse/FCFIELDS-55))
 
