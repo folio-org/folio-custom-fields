@@ -14,18 +14,12 @@ public class CustomFieldsPostDeployVerticle implements PostDeployVerticle {
 
   @Override
   public void init(Vertx vertx, Context context, Handler<AsyncResult<Boolean>> handler) {
-    vertx.executeBlocking(
-      promise -> {
+    vertx.executeBlocking(() -> {
         SpringContextUtil.init(vertx, context, ApplicationConfig.class);
-        promise.complete();
-      },
-      result -> {
-        if (result.succeeded()) {
-          handler.handle(Future.succeededFuture(true));
-        } else {
-          handler.handle(Future.failedFuture(result.cause()));
-        }
-      });
+        return null;
+      })
+      .onSuccess(v -> handler.handle(Future.succeededFuture(true)))
+      .onFailure(error -> handler.handle(Future.failedFuture(error)));
   }
 
 }
