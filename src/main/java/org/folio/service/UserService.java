@@ -1,6 +1,9 @@
 package org.folio.service;
 
 import static io.vertx.core.http.HttpResponseExpectation.SC_OK;
+import static org.folio.HttpStatus.SC_FORBIDDEN;
+import static org.folio.HttpStatus.SC_NOT_FOUND;
+import static org.folio.HttpStatus.SC_UNAUTHORIZED;
 
 import java.util.Map;
 
@@ -69,17 +72,20 @@ public class UserService {
   }
 
   private Throwable handleError(HttpResponseHead response, Throwable throwable) {
-    int statusCode = response.statusCode();
-    if (statusCode == 401 || statusCode == 403) {
-      log.warn(AUTHORIZATION_FAILURE_MESSAGE);
-      return new NotAuthorizedException(AUTHORIZATION_FAILURE_MESSAGE);
-    } else if (statusCode == 404) {
-      log.warn(USER_NOT_FOUND_MESSAGE);
-      return new NotFoundException(USER_NOT_FOUND_MESSAGE);
-    } else {
-      String msg = String.format(CANNOT_GET_USER_DATA_MESSAGE, throwable.getMessage());
-      log.warn(msg);
-      return new IllegalStateException(msg);
+    switch (response.statusCode()) {
+      case SC_UNAUTHORIZED, SC_FORBIDDEN -> {
+        log.warn(AUTHORIZATION_FAILURE_MESSAGE);
+        return new NotAuthorizedException(AUTHORIZATION_FAILURE_MESSAGE);
+      }
+      case SC_NOT_FOUND -> {
+        log.warn(USER_NOT_FOUND_MESSAGE);
+        return new NotFoundException(USER_NOT_FOUND_MESSAGE);
+      }
+      default -> {
+        String msg = String.format(CANNOT_GET_USER_DATA_MESSAGE, throwable.getMessage());
+        log.warn(msg);
+        return new IllegalStateException(msg);
+      }
     }
   }
 }
