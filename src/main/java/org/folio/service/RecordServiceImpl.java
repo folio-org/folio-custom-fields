@@ -76,7 +76,7 @@ public class RecordServiceImpl implements RecordService {
               .select(
                 "SELECT COUNT(*) FROM " + tableName + " WHERE jsonb->'customFields' ? $1",
                 Tuple.of(field.getRefId()),
-                replyHandler);
+                replyHandler::handle);
             return replyHandler
               .future()
               .map(
@@ -111,7 +111,7 @@ public class RecordServiceImpl implements RecordService {
                   + tableName
                   + " WHERE jsonb->'customFields' @> jsonb_build_object($1, " + objectValue + ")",
                 Tuple.of(field.getRefId(), optId),
-                replyHandler);
+                replyHandler::handle);
             return replyHandler
               .future()
               .map(
@@ -200,7 +200,7 @@ public class RecordServiceImpl implements RecordService {
                   + "  SELECT jsonb_build_object($1, " + objectValue + ")"
                   + "  FROM unnest(string_to_array($2, ',')) AS value))",
                 Tuple.of(cf.getRefId(), opts),
-                replyHandler);
+                replyHandler::handle);
             return replyHandler.future().<Void>mapEmpty();
           })
         .toList();

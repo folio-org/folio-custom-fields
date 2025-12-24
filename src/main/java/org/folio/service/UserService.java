@@ -1,5 +1,10 @@
 package org.folio.service;
 
+import static io.vertx.core.http.HttpResponseExpectation.SC_OK;
+import static org.folio.HttpStatus.SC_FORBIDDEN;
+import static org.folio.HttpStatus.SC_NOT_FOUND;
+import static org.folio.HttpStatus.SC_UNAUTHORIZED;
+
 import java.util.Map;
 
 import javax.ws.rs.NotAuthorizedException;
@@ -7,16 +12,15 @@ import javax.ws.rs.NotFoundException;
 
 import io.vertx.core.Future;
 import io.vertx.core.MultiMap;
-import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpResponseHead;
 import io.vertx.core.http.impl.headers.HeadersMultiMap;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
-import io.vertx.ext.web.client.predicate.ErrorConverter;
-import io.vertx.ext.web.client.predicate.ResponsePredicate;
 import io.vertx.ext.web.codec.BodyCodec;
 import lombok.extern.log4j.Log4j2;
+
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -46,20 +50,19 @@ public class UserService {
    * @return User information based on userid from header.
    */
   public Future<User> getUserInfo(final Map<String, String> okapiHeaders) {
-    MultiMap headers = new HeadersMultiMap();
-    headers.addAll(okapiHeaders);
+    MultiMap headers = HeadersMultiMap.httpHeaders();
+    headers.addAll(MapUtils.emptyIfNull(okapiHeaders));
 
     log.debug("getUserInfo:: Attempts to get userInfo by [userId]");
-    Promise<HttpResponse<User>> promise = Promise.promise();
     String userId = okapiHeaders.get(XOkapiHeaders.USER_ID);
     if (StringUtils.isNotBlank(userId)) {
       String usersPath = String.format(USERS_ENDPOINT_TEMPLATE, userId);
-      webClient.getAbs(headers.get(XOkapiHeaders.URL) + usersPath)
+      return webClient.getAbs(headers.get(XOkapiHeaders.URL) + usersPath)
         .putHeaders(headers)
         .as(BodyCodec.json(User.class))
-        .expect(ResponsePredicate.create(ResponsePredicate.SC_OK, errorConverter()))
-        .send(promise);
-      return promise.future().map(HttpResponse::body);
+        .send()
+        .expecting(SC_OK.wrappingFailure(this::handleError))
+        .map(HttpResponse::body);
     } else {
       NotAuthorizedException exception =
         new NotAuthorizedException(XOkapiHeaders.USER_ID + " header is required");
@@ -68,21 +71,21 @@ public class UserService {
     }
   }
 
-  private ErrorConverter errorConverter() {
-    return ErrorConverter.createFullBody(result -> {
-      HttpResponse<Buffer> response = result.response();
-      if (response.statusCode() == 401 || response.statusCode() == 403) {
+  private Throwable handleError(HttpResponseHead response, Throwable throwable) {
+    switch (response.statusCode()) {
+      case SC_UNAUTHORIZED, SC_FORBIDDEN -> {
         log.warn(AUTHORIZATION_FAILURE_MESSAGE);
-        throw new NotAuthorizedException(AUTHORIZATION_FAILURE_MESSAGE);
-      } else if (response.statusCode() == 404) {
-        log.warn(USER_NOT_FOUND_MESSAGE);
-        throw new NotFoundException(USER_NOT_FOUND_MESSAGE);
-      } else {
-        String message = result.message();
-        String msg = String.format(CANNOT_GET_USER_DATA_MESSAGE, message);
-        log.warn(msg);
-        throw new IllegalStateException(message);
+        return new NotAuthorizedException(AUTHORIZATION_FAILURE_MESSAGE);
       }
-    });
+      case SC_NOT_FOUND -> {
+        log.warn(USER_NOT_FOUND_MESSAGE);
+        return new NotFoundException(USER_NOT_FOUND_MESSAGE);
+      }
+      default -> {
+        String msg = String.format(CANNOT_GET_USER_DATA_MESSAGE, throwable.getMessage());
+        log.warn(msg);
+        return new IllegalStateException(msg);
+      }
+    }
   }
 }

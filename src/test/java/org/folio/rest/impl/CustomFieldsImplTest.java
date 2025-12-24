@@ -2,6 +2,7 @@ package org.folio.rest.impl;
 
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_CREATED;
+import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.apache.http.HttpStatus.SC_UNPROCESSABLE_ENTITY;
@@ -13,6 +14,7 @@ import static org.folio.CustomFieldsTestUtil.USER2_HEADER;
 import static org.folio.CustomFieldsTestUtil.USER2_ID;
 import static org.folio.CustomFieldsTestUtil.USER3_ID;
 import static org.folio.CustomFieldsTestUtil.USER4_ID;
+import static org.folio.CustomFieldsTestUtil.USER5_ID;
 import static org.folio.CustomFieldsTestUtil.deleteAllCustomFields;
 import static org.folio.CustomFieldsTestUtil.getAllCustomFields;
 import static org.folio.CustomFieldsTestUtil.itemOptionStatResourcePath;
@@ -228,6 +230,15 @@ public class CustomFieldsImplTest extends TestBase {
     String cfWithHalfName = readFile("fields/post/postCustomFieldHalfName.json");
     String error = postWithStatus(CUSTOM_FIELDS_PATH, cfWithHalfName, SC_NOT_FOUND, userWithoutPermission).asString();
     assertThat(error, containsString("User not found"));
+  }
+
+  @Test
+  public void shouldReturn500WhenUserIsFailedToFind() throws IOException, URISyntaxException {
+    Header userWithoutPermission = new Header(XOkapiHeaders.USER_ID, USER5_ID);
+    String cfWithHalfName = readFile("fields/post/postCustomFieldHalfName.json");
+    String error = postWithStatus(CUSTOM_FIELDS_PATH, cfWithHalfName,
+      SC_INTERNAL_SERVER_ERROR, userWithoutPermission).asString();
+    assertThat(error, containsString("Internal Server Error, Please contact System Administrator or try again"));
   }
 
   @Test

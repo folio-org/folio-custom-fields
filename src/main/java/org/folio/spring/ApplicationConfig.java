@@ -10,11 +10,11 @@ import static org.folio.rest.exc.RestExceptionHandlers.logged;
 import static org.folio.rest.exceptions.CustomFieldExceptionHandlers.invalidOrderHandler;
 import static org.folio.rest.exceptions.CustomFieldExceptionHandlers.invalidValueHandler;
 
-import java.util.Collection;
+import java.util.ServiceLoader;
+import java.util.stream.StreamSupport;
 
 import javax.ws.rs.core.Response;
 
-import io.vertx.core.ServiceHelper;
 import io.vertx.core.Vertx;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
@@ -70,7 +70,8 @@ public class ApplicationConfig {
   public RecordService recordService(Vertx vertx) {
     RecordService rc;
 
-    Collection<RecordServiceFactory> factories = ServiceHelper.loadFactories(RecordServiceFactory.class);
+    var serviceLoader = ServiceLoader.load(RecordServiceFactory.class);
+    var factories = StreamSupport.stream(serviceLoader.spliterator(), false).toList();
 
     if (CollectionUtils.isEmpty(factories)) {
       rc = new NoOpRecordService();

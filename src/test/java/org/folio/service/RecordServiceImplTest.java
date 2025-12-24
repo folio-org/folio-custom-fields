@@ -17,8 +17,8 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.impl.Deployment;
-import io.vertx.core.impl.VertxImpl;
+
+import io.vertx.core.internal.VertxInternal;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
@@ -26,8 +26,8 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.sqlclient.Tuple;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -85,7 +85,7 @@ public class RecordServiceImplTest {
     PostgresClient.setPostgresTester(new PostgresTesterContainer());
     PostgresClient.getInstance(vertx).startPostgresTester();
     deployRestVerticle()
-      .andThen(
+      .onComplete(
         v -> {
           SpringContextUtil.init(
             vertx, getFirstContextFromDeployments(), TestConfigSingleTable.class);
@@ -203,10 +203,9 @@ public class RecordServiceImplTest {
   }
 
   private static Context getFirstContextFromDeployments() {
-    return vertx.deploymentIDs().stream()
-      .map(id -> ((VertxImpl) vertx).getDeployment(id))
-      .map(Deployment::getContexts)
-      .flatMap(Set::stream)
+    return ((VertxInternal) vertx).deploymentManager().deployments().stream()
+      .map(deploymentContext -> deploymentContext.deployment().contexts())
+      .flatMap(Collection::stream)
       .findFirst()
       .orElseThrow();
   }
@@ -227,7 +226,7 @@ public class RecordServiceImplTest {
   @Test
   public void testDeleteCustomFieldSingleTable(TestContext context) {
     SpringContextUtil.init(vertx, getFirstContextFromDeployments(), TestConfigSingleTable.class);
-    deleteCustomField(customFieldsType1.get(0));
+    deleteCustomField(customFieldsType1.getFirst());
 
     fetchAllEntities()
       .onComplete(

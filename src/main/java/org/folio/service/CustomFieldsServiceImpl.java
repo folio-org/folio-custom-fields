@@ -384,7 +384,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
   }
 
   private Future<Void> updateCustomFields(List<CustomField> customFields, String tenantId) {
-    return CompositeFuture.all(customFields
+    return Future.all(customFields
       .stream()
       .map(customField -> repository.update(customField, tenantId))
       .collect(Collectors.toList())

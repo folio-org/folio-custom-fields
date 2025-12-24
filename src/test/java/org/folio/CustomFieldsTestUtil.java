@@ -26,6 +26,7 @@ public class CustomFieldsTestUtil {
   public static final String USER2_ID = "22222222-2222-2222-2222-222222222222";
   public static final String USER3_ID = "33333333-3333-3333-3333-333333333333";
   public static final String USER4_ID = "44444444-4444-4444-4444-444444444444";
+  public static final String USER5_ID = "55555555-5555-5555-5555-555555555555";
 
   public static final Header USER1_HEADER = new Header(XOkapiHeaders.USER_ID, USER1_ID);
   public static final Header USER2_HEADER = new Header(XOkapiHeaders.USER_ID, USER2_ID);
@@ -70,6 +71,13 @@ public class CustomFieldsTestUtil {
       get(urlPathEqualTo(USERS_PATH + "/" + USER4_ID))
         .willReturn(aResponse()
           .withStatus(404))
+    );
+
+    stubFor(
+      get(urlPathEqualTo(USERS_PATH + "/" + USER5_ID))
+        .willReturn(aResponse()
+          .withStatus(500)
+          .withBody("{\"errors\":[{\"message\":\"Internal Server Error\"}], \"total_records\":1}"))
     );
   }
 
