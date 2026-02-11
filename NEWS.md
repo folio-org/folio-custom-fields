@@ -1,3 +1,6 @@
+## 3.0.0 In progress
+* Use GitHub Workflows for Maven ([FCFIELDS-79](https://issues.folio.org/browse/FCFIELDS-79))
+
 ## 2.3.0 2025-03-12
 * Added logs for debugging ([#56](https://github.com/folio-org/folio-custom-fields/pull/56))
 * Update to folio-custom-fields Java 21 ([FOLIO-4230](https://folio-org.atlassian.net/browse/FOLIO-4230))
