@@ -41,6 +41,7 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import org.folio.okapi.common.XOkapiHeaders;
 import org.folio.rest.jaxrs.model.CustomField;
@@ -120,6 +121,14 @@ public class CustomFieldsImplTest extends TestBase {
     CustomField cfWithHalfName = createCustomField(readFile("fields/post/postCustomFieldHalfName2.json"));
     assertEquals("thisIsATrickyString", cfWithAccentName.getRefId());
     assertEquals("thisIsA", cfWithHalfName.getRefId());
+  }
+
+  @Test
+  public void shouldCreateNonEmptyRefIdForNonRomanName() throws IOException, URISyntaxException {
+    CustomField field = createCustomField(readFile("fields/post/postCustomFieldWithNonRomanName.json"));
+    assertNotNull(field.getRefId());
+    assertNotEquals("", field.getRefId());
+    assertNotNull(UUID.fromString(field.getRefId()));
   }
 
   @Test

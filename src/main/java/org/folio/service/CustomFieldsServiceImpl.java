@@ -432,7 +432,8 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
       .replaceAll("[^a-zA-Z\\s]", "")
       .replaceAll("\\s+", "");
 
-    return StringUtils.uncapitalize(splitString);
+    final String result = StringUtils.uncapitalize(splitString);
+    return StringUtils.isBlank(result) ? UUID.randomUUID().toString() : result;
   }
 
   private String getCustomFieldRefId(String id, Integer maxRefId) {
