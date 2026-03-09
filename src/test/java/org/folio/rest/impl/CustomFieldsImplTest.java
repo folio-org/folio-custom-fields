@@ -38,7 +38,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -126,9 +128,10 @@ public class CustomFieldsImplTest extends TestBase {
   @Test
   public void shouldCreateNonEmptyRefIdForNonRomanName() throws IOException, URISyntaxException {
     CustomField field = createCustomField(readFile("fields/post/postCustomFieldWithNonRomanName.json"));
+    String expectedRefId = Base64.getEncoder().withoutPadding()
+      .encodeToString("汉字".getBytes(StandardCharsets.UTF_8));
     assertNotNull(field.getRefId());
-    assertNotEquals("", field.getRefId());
-    assertNotNull(UUID.fromString(field.getRefId()));
+    assertEquals(expectedRefId, field.getRefId());
   }
 
   @Test
