@@ -13,7 +13,9 @@ import static org.folio.service.CustomFieldUtils.isSelectableCustomFieldType;
 import static org.folio.service.CustomFieldUtils.isTextBoxCustomFieldType;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
+import java.util.Base64;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -432,7 +434,10 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
       .replaceAll("[^a-zA-Z\\s]", "")
       .replaceAll("\\s+", "");
 
-    return StringUtils.uncapitalize(splitString);
+    final String result = StringUtils.uncapitalize(splitString);
+    return StringUtils.isBlank(result)
+      ? Base64.getEncoder().withoutPadding().encodeToString(customFieldName.getBytes(StandardCharsets.UTF_8))
+      : result;
   }
 
   private String getCustomFieldRefId(String id, Integer maxRefId) {

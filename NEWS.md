@@ -1,5 +1,6 @@
 ## 3.0.0 In progress
 * Use GitHub Workflows for Maven ([FCFIELDS-79](https://issues.folio.org/browse/FCFIELDS-79))
+* Fix empty refId when custom field name contains only non-Roman characters([FCFIELDS-70](https://issues.folio.org/browse/FCFIELDS-70))
 
 ## 2.3.0 2025-03-12
 * Added logs for debugging ([#56](https://github.com/folio-org/folio-custom-fields/pull/56))

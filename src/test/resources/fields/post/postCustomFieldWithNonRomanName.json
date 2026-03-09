@@ -1,0 +1,13 @@
+{
+  "name": "汉字",
+  "type": "TEXTBOX_LONG",
+  "entityType": "user",
+  "visible": true,
+  "required": true,
+  "isRepeatable": false,
+  "order": 10,
+  "helpText": "",
+  "textField": {
+    "fieldFormat": "TEXT"
+  }
+}

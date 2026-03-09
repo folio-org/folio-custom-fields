@@ -38,7 +38,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 
@@ -120,6 +122,26 @@ public class CustomFieldsImplTest extends TestBase {
     CustomField cfWithHalfName = createCustomField(readFile("fields/post/postCustomFieldHalfName2.json"));
     assertEquals("thisIsATrickyString", cfWithAccentName.getRefId());
     assertEquals("thisIsA", cfWithHalfName.getRefId());
+  }
+
+  @Test
+  public void shouldCreateNonEmptyRefIdForNonRomanName() throws IOException, URISyntaxException {
+    CustomField field = createCustomField(readFile("fields/post/postCustomFieldWithNonRomanName.json"));
+    String expectedRefId = Base64.getEncoder().withoutPadding()
+      .encodeToString("汉字".getBytes(StandardCharsets.UTF_8));
+    assertNotNull(field.getRefId());
+    assertEquals(expectedRefId, field.getRefId());
+  }
+
+  @Test
+  public void shouldCreateSameBaseRefIdForTwoFieldsWithSameNonRomanName() throws IOException, URISyntaxException {
+    String fileContent = readFile("fields/post/postCustomFieldWithNonRomanName.json");
+    CustomField first = createCustomField(fileContent);
+    CustomField second = createCustomField(fileContent);
+    String expectedBase = Base64.getEncoder().withoutPadding()
+      .encodeToString("汉字".getBytes(StandardCharsets.UTF_8));
+    assertEquals(expectedBase, first.getRefId());
+    assertEquals(expectedBase + "_2", second.getRefId());
   }
 
   @Test
