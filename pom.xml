@@ -20,20 +20,20 @@
     <sonar.exclusions>src/main/java/**/ApplicationConfig.*</sonar.exclusions>
 
     <raml-module-builder.version>36.0.0-SNAPSHOT</raml-module-builder.version>
-    <vertx.version>5.0.6</vertx.version>
+    <vertx.version>5.0.7</vertx.version>
     <folio-service-tools.version>6.0.0-SNAPSHOT</folio-service-tools.version>
     <folio-di-support.version>4.0.0-SNAPSHOT</folio-di-support.version>
     <lombok.version>1.18.42</lombok.version>
     <commons-validator.version>1.10.1</commons-validator.version>
     <commons-lang3.version>3.20.0</commons-lang3.version>
-    <spring.version>7.0.2</spring.version>
+    <spring.version>7.0.4</spring.version>
     <log4j-bom.version>2.25.3</log4j-bom.version>
 
     <!--  Test dependencies versions  -->
-    <junit.version>6.0.1</junit.version>
+    <junit.version>6.0.2</junit.version>
     <easy-random.version>5.0.0</easy-random.version>
     <rest-assured.version>6.0.0</rest-assured.version>
-    <aspectj.version>1.9.22.1</aspectj.version>
+    <aspectj.version>1.9.25.1</aspectj.version>
     <assertj-core.version>3.25.3</assertj-core.version>
     <junit-vintage-engine.version>${junit.version}</junit-vintage-engine.version>
 
