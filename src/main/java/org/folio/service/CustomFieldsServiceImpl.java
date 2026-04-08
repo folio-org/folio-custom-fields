@@ -452,7 +452,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
    * @return query with "sortby order"
    */
   private String withSortByOrder(String cqlQuery) {
-    log.debug("withSortByOrder:: Attempts to sort by [cqlQuery: {}]", cqlQuery);
+    log.debug("withSortByOrder:: Attempts to sort custom fields query.");
 
     try {
       final CQLParser parser = new CQLParser(CQLParser.V1POINT2);
@@ -469,7 +469,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         return newSortNode.toCQL();
       }
     } catch (CQLParseException | IOException e) {
-      log.warn("Unsupported Query Format : Search query is in an unsupported format, msg: {}", e.getMessage());
+      log.warn("Unsupported Query Format : Search query is in an unsupported format.");
       throw new IllegalArgumentException(e);
     }
   }

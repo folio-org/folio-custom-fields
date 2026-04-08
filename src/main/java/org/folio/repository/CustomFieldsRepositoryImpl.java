@@ -98,7 +98,7 @@ public class CustomFieldsRepositoryImpl implements CustomFieldsRepository {
   @Override
   public Future<CustomFieldCollection> findByQuery(String query, int offset, int limit, String tenantId) {
     CqlQuery<CustomField> q = new CqlQuery<>(pgClient(tenantId), CUSTOM_FIELDS_TABLE, CustomField.class);
-    log.debug("Getting custom fields by query: {}.", query);
+    log.debug("Getting custom fields by query.");
     return q.get(query, offset, limit).map(this::toCustomFieldCollection)
       .recover(excTranslator.translateOrPassBy());
   }
