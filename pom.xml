@@ -22,7 +22,7 @@
     <raml-module-builder.version>36.0.0-SNAPSHOT</raml-module-builder.version>
     <vertx.version>5.0.6</vertx.version>
     <folio-service-tools.version>6.0.0-SNAPSHOT</folio-service-tools.version>
-    <folio-di-support.version>4.0.0-SNAPSHOT</folio-di-support.version>
+    <folio-di-support.version>4.1.0-SNAPSHOT</folio-di-support.version>
     <lombok.version>1.18.42</lombok.version>
     <commons-validator.version>1.10.1</commons-validator.version>
     <commons-lang3.version>3.20.0</commons-lang3.version>
