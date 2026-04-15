@@ -4,7 +4,7 @@
 
   <groupId>org.folio</groupId>
   <artifactId>folio-custom-fields</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <licenses>
@@ -489,7 +489,7 @@
     <url>https://github.com/folio-org/folio-custom-fields</url>
     <connection>scm:git:git://github.com/folio-org/folio-custom-fields</connection>
     <developerConnection>scm:git:git@github.com:folio-org/folio-custom-fields.git</developerConnection>
-    <tag>v3.0.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <repositories>
