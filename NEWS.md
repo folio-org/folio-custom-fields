@@ -1,7 +1,40 @@
-## 3.0.0 In progress
+## 3.0.0 2026-04-15
+
+### Breaking changes
+* Upgrade to Vert.x `v5.0.6` ([FCFIELDS-72](https://issues.folio.org/browse/FCFIELDS-72))
+
+### New APIs versions
+* Provides `custom-fields v3.1`
+
+### Features
+* Add `displayInAccordion` property to custom field definition ([FCFIELDS-54](https://issues.folio.org/browse/FCFIELDS-54))
+* Sensitive data cleanup ([FCFIELDS-58](https://issues.folio.org/browse/FCFIELDS-58))
 * Use GitHub Workflows for Maven ([FCFIELDS-79](https://issues.folio.org/browse/FCFIELDS-79))
-* Fix empty refId when custom field name contains only non-Roman characters([FCFIELDS-70](https://issues.folio.org/browse/FCFIELDS-70))
-* Upgrade `folio-di-support` to `v4.1.0-SNAPSHOT` ([FCFIELDS-83](https://issues.folio.org/browse/FCFIELDS-83))
+
+### Bug fixes
+* Fix empty refId when custom field name contains only non-Roman characters ([FCFIELDS-70](https://issues.folio.org/browse/FCFIELDS-70))
+* Remove SQL injection "WHERE id='%s'" ([FCFIELDS-62](https://issues.folio.org/browse/FCFIELDS-62))
+
+### Tech Dept
+* Remove useless Promise, remove duplicate PostgresClient code ([FCFIELDS-63](https://issues.folio.org/browse/FCFIELDS-63))
+* Run removeValues in transaction ([FCFIELDS-68](https://issues.folio.org/browse/FCFIELDS-68))
+* replaceAll: remove values in transaction ([FCFIELDS-61](https://issues.folio.org/browse/FCFIELDS-61))
+* Exclude vulnerable commons-beanutils dependency ([FCFIELDS-67](https://issues.folio.org/browse/FCFIELDS-67))
+* Upgrade `folio-di-support` to `v4.0.0` ([FCFIELDS-83](https://issues.folio.org/browse/FCFIELDS-83))
+
+### Dependencies
+* Bump `raml-module-builder` from `35.4.0` to `36.0.0`
+* Bump `vertx` from `4.5.13` to `5.0.10`
+* Bump `folio-service-tools` from `5.0.0` to `6.0.0`
+* Bump `folio-di-support` from `3.0.0` to `4.0.0`
+* Bump `spring` from `6.2.3` to `7.0.6`
+* Bump `lombok` from `1.18.36` to `1.18.44`
+* Bump `commons-validator` from `1.9.0` to `1.10.1`
+* Bump `log4j-bom` from `2.24.0` to `2.25.4`
+* Bump `junit` from `5.10.0` to `6.0.3`
+* Bump `rest-assured` from `5.5.0` to `6.0.0`
+
+---
 
 ## 2.3.0 2025-03-12
 * Added logs for debugging ([#56](https://github.com/folio-org/folio-custom-fields/pull/56))
