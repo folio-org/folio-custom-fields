@@ -14,7 +14,6 @@ import io.vertx.core.Future;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpResponseHead;
-import io.vertx.core.http.impl.headers.HeadersMultiMap;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.codec.BodyCodec;
@@ -50,7 +49,7 @@ public class UserService {
    * @return User information based on userid from header.
    */
   public Future<User> getUserInfo(final Map<String, String> okapiHeaders) {
-    MultiMap headers = HeadersMultiMap.httpHeaders();
+    MultiMap headers = MultiMap.caseInsensitiveMultiMap();
     headers.addAll(MapUtils.emptyIfNull(okapiHeaders));
 
     log.debug("getUserInfo:: Attempts to get userInfo by [userId]");
