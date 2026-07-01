@@ -1,3 +1,9 @@
+## 4.0.0-SNAPSHOT In progress
+
+### Bug fixes
+* Update example for putCustomFieldCollection ([FCFIELDS-73](https://issues.folio.org/browse/FCFIELDS-73))
+
+
 ## 3.0.0 2026-04-15
 
 ### Breaking changes
