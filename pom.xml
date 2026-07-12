@@ -20,7 +20,7 @@
     <sonar.exclusions>src/main/java/**/ApplicationConfig.*</sonar.exclusions>
 
     <raml-module-builder.version>36.0.0</raml-module-builder.version>
-    <vertx.version>5.1.3</vertx.version>
+    <vertx.version>5.1.4</vertx.version>
     <folio-service-tools.version>6.0.0</folio-service-tools.version>
     <folio-di-support.version>4.0.0</folio-di-support.version>
     <lombok.version>1.18.46</lombok.version>
