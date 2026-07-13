@@ -1,5 +1,11 @@
 ## 4.0.0-SNAPSHOT In progress
 
+### New APIs versions
+* Provides `custom-fields v3.2`
+
+### Features
+* Add `LOOKUP` custom field type storing the UUID of a record in another FOLIO app ([UXPROD-5934](https://folio-org.atlassian.net/browse/UXPROD-5934)). Values are validated for UUID shape only; existence and entity type of the referenced record are not verified (no referential integrity).
+
 ### Bug fixes
 * Update example for putCustomFieldCollection ([FCFIELDS-73](https://issues.folio.org/browse/FCFIELDS-73))
 
