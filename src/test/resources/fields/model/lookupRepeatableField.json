@@ -1,0 +1,13 @@
+{
+  "name": "Lookup field",
+  "type": "LOOKUP",
+  "refId": "lookup-field",
+  "visible": true,
+  "required": true,
+  "isRepeatable": true,
+  "entityType": "po_line",
+  "helpText": "Select a record",
+  "lookupField": {
+    "refEntityType": "organization"
+  }
+}
