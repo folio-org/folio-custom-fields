@@ -2,7 +2,7 @@
 
 ### Bug fixes
 * Update example for putCustomFieldCollection ([FCFIELDS-73](https://issues.folio.org/browse/FCFIELDS-73))
-
+* Set "permissions: contents: read" in maven.yml ([FOLIO-4553](https://folio-org.atlassian.net/browse/FOLIO-4553))
 
 ## 3.0.0 2026-04-15
 
