@@ -52,8 +52,9 @@ public class LookupDefinitionValidatorTest {
 
   @Test
   public void shouldReturnErrorIfLookupFieldMissing() {
+    CustomField customField = lookupField();
     IllegalArgumentException e =
-      assertThrows(IllegalArgumentException.class, () -> validator.validateDefinition(lookupField()));
+      assertThrows(IllegalArgumentException.class, () -> validator.validateDefinition(customField));
     assertThat(e.getMessage(), containsString("The 'lookupField' property should be defined"));
   }
 

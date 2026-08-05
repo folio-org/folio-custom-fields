@@ -49,31 +49,34 @@ public class LookupFieldValueValidatorTest {
   @Test
   public void shouldThrowWhenValueIsNotAString() throws IOException, URISyntaxException {
     CustomField field = getLookupFieldDefinition();
+    Object value = parseCustomFieldJsonValue("100");
     IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-      () -> validator.validate(parseCustomFieldJsonValue("100"), field));
+      () -> validator.validate(value, field));
     assertEquals("Field with type LOOKUP must be a string", e.getMessage());
   }
 
   @Test
   public void shouldThrowWhenValueIsMalformedUuid() throws IOException, URISyntaxException {
     CustomField field = getLookupFieldDefinition();
+    Object value = parseCustomFieldJsonValue("\"not-a-uuid\"");
     IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-      () -> validator.validate(parseCustomFieldJsonValue("\"not-a-uuid\""), field));
+      () -> validator.validate(value, field));
     assertEquals("Field with type LOOKUP must contain a valid UUID: not-a-uuid", e.getMessage());
   }
 
   @Test
   public void shouldThrowWhenValueIsNonCanonicalUuid() throws IOException, URISyntaxException {
     CustomField field = getLookupFieldDefinition();
-    assertThrows(IllegalArgumentException.class,
-      () -> validator.validate(parseCustomFieldJsonValue("\"1-2-3-4-5\""), field));
+    Object value = parseCustomFieldJsonValue("\"1-2-3-4-5\"");
+    assertThrows(IllegalArgumentException.class, () -> validator.validate(value, field));
   }
 
   @Test
   public void shouldThrowWhenNotRepeatableValueIsArray() throws IOException, URISyntaxException {
     CustomField field = getLookupFieldDefinition();
+    Object value = parseCustomFieldJsonValue("[" + VALID_UUID + "]");
     IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-      () -> validator.validate(parseCustomFieldJsonValue("[" + VALID_UUID + "]"), field));
+      () -> validator.validate(value, field));
     assertEquals("Field with type LOOKUP must be a string", e.getMessage());
   }
 
@@ -91,17 +94,17 @@ public class LookupFieldValueValidatorTest {
   @Test
   public void shouldThrowWhenRepeatableValueIsScalar() throws IOException, URISyntaxException {
     CustomField field = getLookupRepeatableFieldDefinition();
+    Object value = parseCustomFieldJsonValue(VALID_UUID);
     IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-      () -> validator.validate(parseCustomFieldJsonValue(VALID_UUID), field));
+      () -> validator.validate(value, field));
     assertEquals("Field with type LOOKUP must be an array", e.getMessage());
   }
 
   @Test
   public void shouldThrowWhenRepeatableArrayHasMalformedUuid() throws IOException, URISyntaxException {
     CustomField field = getLookupRepeatableFieldDefinition();
-    String jsonValue = "[" + VALID_UUID + ", \"not-a-uuid\"]";
-    assertThrows(IllegalArgumentException.class,
-      () -> validator.validate(parseCustomFieldJsonValue(jsonValue), field));
+    Object value = parseCustomFieldJsonValue("[" + VALID_UUID + ", \"not-a-uuid\"]");
+    assertThrows(IllegalArgumentException.class, () -> validator.validate(value, field));
   }
 
   @Test
