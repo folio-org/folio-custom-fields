@@ -1,7 +1,12 @@
 {
   "id": "${artifactId}-${version}",
   "name": "custom-fields",
-  "requires": [],
+  "requires": [
+    {
+      "id": "users",
+      "version": "16.4"
+    }
+  ],
   "provides": [
     {
       "id": "custom-fields",
