@@ -76,6 +76,11 @@
       "description": "Text field properties",
       "$ref": "textField.json"
     },
+    "lookupField": {
+      "type": "object",
+      "description": "Lookup field properties",
+      "$ref": "lookupField.json"
+    },
     "displayInAccordion": {
       "type": "string",
       "description": "Display in accordion names for the custom field"

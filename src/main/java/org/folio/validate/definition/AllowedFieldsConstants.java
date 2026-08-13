@@ -33,6 +33,10 @@ final class AllowedFieldsConstants {
     .addAll(COMMON_ALLOWED_FIELDS).add("textField")
     .build();
 
+  static final Set<String> LOOKUP_ALLOWED_FIELDS = new ImmutableSet.Builder<String>()
+    .addAll(COMMON_ALLOWED_FIELDS).add("lookupField")
+    .build();
+
   private AllowedFieldsConstants() {
 
   }
