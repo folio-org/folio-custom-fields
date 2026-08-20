@@ -1,3 +1,8 @@
+## 3.0.1 2026-08-20
+
+### Dependencies
+* Add missing dependencies ([FCFIELDS-92](https://folio-org.atlassian.net/browse/FCFIELDS-92))
+
 ## 3.0.0 2026-04-15
 
 ### Breaking changes
