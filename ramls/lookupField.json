@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Lookup Field Schema",
+  "description": "Lookup Field Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "refEntityType": {
+      "type": "string",
+      "description": "The entity type of the record the lookup value references, e.g. 'organization' or 'user'. Open-ended lowercase string, mirroring customField.entityType",
+      "example": "organization"
+    }
+  },
+  "required": [
+    "refEntityType"
+  ]
+}

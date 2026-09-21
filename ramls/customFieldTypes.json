@@ -11,6 +11,7 @@
     "MULTI_SELECT_DROPDOWN",
     "TEXTBOX_SHORT",
     "TEXTBOX_LONG",
-    "DATE_PICKER"
+    "DATE_PICKER",
+    "LOOKUP"
   ]
 }
