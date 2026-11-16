@@ -7,12 +7,12 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.reverseOrder;
 
+import static org.folio.service.CqlSortUtils.withSortByOrder;
 import static org.folio.service.CustomFieldUtils.extractDefaultOptionIds;
 import static org.folio.service.CustomFieldUtils.extractOptionIds;
 import static org.folio.service.CustomFieldUtils.isSelectableCustomFieldType;
 import static org.folio.service.CustomFieldUtils.isTextBoxCustomFieldType;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.Base64;
@@ -41,17 +41,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.folio.rest.persist.Conn;
 import org.folio.rest.persist.PostgresClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.z3950.zing.cql.CQLDefaultNodeVisitor;
-import org.z3950.zing.cql.CQLNode;
-import org.z3950.zing.cql.CQLParseException;
-import org.z3950.zing.cql.CQLParser;
-import org.z3950.zing.cql.CQLSortNode;
-import org.z3950.zing.cql.ModifierSet;
 
 import org.folio.common.OkapiParams;
 import org.folio.model.RecordUpdate;
+import org.folio.repository.CustomFieldSectionsRepository;
 import org.folio.repository.CustomFieldsRepository;
 import org.folio.rest.jaxrs.model.CustomField;
 import org.folio.rest.jaxrs.model.CustomFieldCollection;
@@ -68,10 +62,7 @@ import org.folio.service.exc.ServiceExceptions;
 @Component
 public class CustomFieldsServiceImpl implements CustomFieldsService {
 
-  private static final String ALL_RECORDS_QUERY = "cql.allRecords=1";
-
   private static final String FORMAT_ATTRIBUTE = "fieldFormat";
-  private static final String ORDER_ATTRIBUTE = "order/number";
   private static final String TYPE_ATTRIBUTE = "type";
 
   private static final String TYPE_CHANGING_MESSAGE =
@@ -81,15 +72,25 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
   private static final String MISSED_OPTION_MESSAGE = "Option with id '%s' not found in custom field '%s'";
   private static final String FORMAT_CHANGING_MESSAGE =
     "The format of the custom field can not be changed: newFormat = %s, oldFormat = %s";
+  private static final String SECTION_ID_ATTRIBUTE = "sectionId";
+  private static final String SECTION_NOT_FOUND_MESSAGE = "Custom field section with id '%s' not found";
+  private static final String SECTION_ENTITY_TYPE_MESSAGE =
+    "Custom field section '%s' belongs to entityType '%s', but the custom field has entityType '%s'";
 
-  @Autowired
-  private CustomFieldsRepository repository;
-  @Autowired
-  private UserService userService;
-  @Autowired
-  private RecordService recordService;
-  @Autowired
-  private Vertx vertx;
+  private final CustomFieldsRepository repository;
+  private final CustomFieldSectionsRepository sectionsRepository;
+  private final UserService userService;
+  private final RecordService recordService;
+  private final Vertx vertx;
+
+  public CustomFieldsServiceImpl(CustomFieldsRepository repository, CustomFieldSectionsRepository sectionsRepository,
+                                 UserService userService, RecordService recordService, Vertx vertx) {
+    this.repository = repository;
+    this.sectionsRepository = sectionsRepository;
+    this.userService = userService;
+    this.recordService = recordService;
+    this.vertx = vertx;
+  }
 
   @Override
   public Future<CustomField> save(CustomField customField, OkapiParams params) {
@@ -99,9 +100,10 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     return repository.maxOrder(params.getTenant())
       .compose(maxOrder -> {
         customField.setOrder(maxOrder + 1);
-        return save(customField, params,
-                (unAccentName, tenantId) -> repository.maxRefId(unAccentName, params.getTenant()),
-                (customField1, tenantId) -> repository.save(customField1, params.getTenant()));
+        return pgClient(params.getTenant()).withTrans(conn -> validateSection(customField, params.getTenant(), conn)
+          .compose(v -> save(customField, params,
+                (unAccentName, tenantId) -> repository.maxRefId(unAccentName, params.getTenant(), conn),
+                (customField1, tenantId) -> repository.save(customField1, conn))));
       });
   }
 
@@ -114,8 +116,9 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
       .compose(oldCustomField -> {
         customField.setId(oldCustomField.getId());
         customField.setOrder(oldCustomField.getOrder());
-        return update(customField, oldCustomField, params,
-                (customFieldEntity, tenantId) -> repository.update(customFieldEntity, tenantId));
+        return pgClient(params.getTenant()).withTrans(conn -> validateSection(customField, params.getTenant(), conn)
+          .compose(v -> update(customField, oldCustomField, params,
+                (customFieldEntity, tenantId) -> repository.update(customFieldEntity, conn))));
       });
   }
 
@@ -165,13 +168,49 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         Set<String> fieldsToRemove = Sets.difference(existingFieldsMap.keySet(), newFieldsMap.keySet());
         Set<String> fieldsToUpdate = Sets.intersection(existingFieldsMap.keySet(), newFieldsMap.keySet());
         Set<String> fieldsToInsert = Sets.difference(newFieldsMap.keySet(), existingFieldsMap.keySet());
-        PostgresClient postgresClient = PostgresClient.getInstance(vertx, params.getTenant());
-
-        return postgresClient.withTrans(connection -> removeFields(connection, fieldsToRemove)
+        return pgClient(params.getTenant()).withTrans(connection -> validateSections(customFields, params.getTenant(), connection)
+                .compose(x -> removeFields(connection, fieldsToRemove))
                 .compose(x -> updateFields(params, connection, fieldsToUpdate, newFieldsMap, existingFieldsMap))
                 .compose(x -> insertFields(params, connection, fieldsToInsert, newFieldsMap))
                 .compose(unused -> removeValues(params, connection, fieldsToRemove, existingFieldsMap)))
                 .map(customFields);
+      });
+  }
+
+  /**
+   * Validates the sectionId of each distinct section referenced by the given fields.
+   */
+  private Future<Void> validateSections(List<CustomField> customFields, String tenantId, Conn connection) {
+    Collection<CustomField> oneFieldPerSection = customFields.stream()
+      .filter(field -> field.getSectionId() != null)
+      .collect(Collectors.toMap(CustomField::getSectionId, Function.identity(), (first, second) -> first))
+      .values();
+    return executeForEach(oneFieldPerSection, field -> validateSection(field, tenantId, connection));
+  }
+
+  /**
+   * Validates that the section the field is assigned to exists and has the field's entityType.
+   * The section row is locked with FOR SHARE until the transaction ends, so a concurrent section delete
+   * (FOR UPDATE) waits and then sees this field as assigned. No field can end up in a deleted section.
+   */
+  private Future<Void> validateSection(CustomField customField, String tenantId, Conn connection) {
+    String sectionId = customField.getSectionId();
+    if (sectionId == null) {
+      return succeededFuture();
+    }
+    return sectionsRepository.findByIdForShare(sectionId, tenantId, connection)
+      .compose(section -> {
+        if (section.isEmpty()) {
+          return failedFuture(new InvalidFieldValueException(SECTION_ID_ATTRIBUTE, sectionId,
+            format(SECTION_NOT_FOUND_MESSAGE, sectionId)));
+        }
+        String sectionEntityType = section.get().getEntityType();
+        if (!Objects.equals(sectionEntityType, customField.getEntityType())) {
+          return failedFuture(new InvalidFieldValueException(SECTION_ID_ATTRIBUTE, sectionId,
+            format(SECTION_ENTITY_TYPE_MESSAGE, section.get().getName(), sectionEntityType,
+              customField.getEntityType())));
+        }
+        return succeededFuture();
       });
   }
 
@@ -427,6 +466,10 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     });
   }
 
+  private PostgresClient pgClient(String tenantId) {
+    return PostgresClient.getInstance(vertx, tenantId);
+  }
+
   private String unAccentName(String customFieldName) {
     final String capitalizedString = WordUtils.capitalizeFully(customFieldName);
     final String splitString = Normalizer.normalize(capitalizedString, Normalizer.Form.NFD)
@@ -442,36 +485,6 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
 
   private String getCustomFieldRefId(String id, Integer maxRefId) {
     return id + (maxRefId < 1 ? "" : "_" + (maxRefId + 1));
-  }
-
-  /**
-   * Adds "sortby order" part to cqlQuery, if query already has "sortby" part, then "order"
-   * is added as second sort attribute
-   *
-   * @param cqlQuery initial query
-   * @return query with "sortby order"
-   */
-  private String withSortByOrder(String cqlQuery) {
-    log.debug("withSortByOrder:: Attempts to sort custom fields query.");
-
-    try {
-      final CQLParser parser = new CQLParser(CQLParser.V1POINT2);
-      CQLNode node = parser.parse(!StringUtils.isBlank(cqlQuery) ? cqlQuery : ALL_RECORDS_QUERY);
-      SortVisitor visitor = new SortVisitor();
-      node.traverse(visitor);
-      CQLSortNode foundSortNode = visitor.getCqlSortNode();
-      if (foundSortNode != null) {
-        foundSortNode.addSortIndex(new ModifierSet(ORDER_ATTRIBUTE));
-        return node.toCQL();
-      } else {
-        CQLSortNode newSortNode = new CQLSortNode(node);
-        newSortNode.addSortIndex(new ModifierSet(ORDER_ATTRIBUTE));
-        return newSortNode.toCQL();
-      }
-    } catch (CQLParseException | IOException e) {
-      log.warn("Unsupported Query Format : Search query is in an unsupported format.");
-      throw new IllegalArgumentException(e);
-    }
   }
 
   private CustomFieldCollection sortByOrder(CustomFieldCollection collection) {
@@ -491,20 +504,6 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
       if (StringUtils.isBlank(value.getId())) {
         value.setId("opt_" + ++maxOptionIdIndex);
       }
-    }
-  }
-
-  private static class SortVisitor extends CQLDefaultNodeVisitor {
-
-    private CQLSortNode cqlSortNode;
-
-    @Override
-    public void onSortNode(CQLSortNode cqlSortNode) {
-      this.cqlSortNode = cqlSortNode;
-    }
-
-    public CQLSortNode getCqlSortNode() {
-      return cqlSortNode;
     }
   }
 }

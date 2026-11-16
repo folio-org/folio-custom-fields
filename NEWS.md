@@ -5,6 +5,7 @@
 
 ### Features
 * Add `LOOKUP` custom field type storing the UUID of a record in another FOLIO app. ([FCFIELDS-90](https://folio-org.atlassian.net/browse/FCFIELDS-90))
+* Add custom field sections (`/custom-field-sections`) to group custom fields per entity type ([FCFIELDS-95](https://folio-org.atlassian.net/browse/FCFIELDS-95))
 
 ### Bug fixes
 * Update example for putCustomFieldCollection ([FCFIELDS-73](https://issues.folio.org/browse/FCFIELDS-73))
