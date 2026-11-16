@@ -41,7 +41,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.folio.rest.persist.Conn;
 import org.folio.rest.persist.PostgresClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import org.folio.common.OkapiParams;
@@ -78,16 +77,20 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
   private static final String SECTION_ENTITY_TYPE_MESSAGE =
     "Custom field section '%s' belongs to entityType '%s', but the custom field has entityType '%s'";
 
-  @Autowired
-  private CustomFieldsRepository repository;
-  @Autowired
-  private CustomFieldSectionsRepository sectionsRepository;
-  @Autowired
-  private UserService userService;
-  @Autowired
-  private RecordService recordService;
-  @Autowired
-  private Vertx vertx;
+  private final CustomFieldsRepository repository;
+  private final CustomFieldSectionsRepository sectionsRepository;
+  private final UserService userService;
+  private final RecordService recordService;
+  private final Vertx vertx;
+
+  public CustomFieldsServiceImpl(CustomFieldsRepository repository, CustomFieldSectionsRepository sectionsRepository,
+                                 UserService userService, RecordService recordService, Vertx vertx) {
+    this.repository = repository;
+    this.sectionsRepository = sectionsRepository;
+    this.userService = userService;
+    this.recordService = recordService;
+    this.vertx = vertx;
+  }
 
   @Override
   public Future<CustomField> save(CustomField customField, OkapiParams params) {

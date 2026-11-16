@@ -93,6 +93,8 @@ public class CustomFieldSectionsImplTest extends TestBase {
     createSection("Contact", "user");
 
     postWithStatus(CUSTOM_FIELD_SECTIONS_PATH, sectionJson("contact", "user"), SC_UNPROCESSABLE_ENTITY);
+
+    assertThat(getSectionNames("?query=entityType==user"), contains("Contact"));
   }
 
   @Test
@@ -227,7 +229,9 @@ public class CustomFieldSectionsImplTest extends TestBase {
 
   @Test
   public void putSectionShouldReturn404WhenNotFound() {
-    putWithStatus(sectionResourcePath(STUB_FIELD_ID), sectionJson("Contacts", "user"), SC_NOT_FOUND);
+    String error = putWithStatus(sectionResourcePath(STUB_FIELD_ID), sectionJson("Contacts", "user"), SC_NOT_FOUND)
+      .asString();
+    assertThat(error, containsString("CustomFieldSection not found by id"));
   }
 
   @Test
@@ -246,6 +250,8 @@ public class CustomFieldSectionsImplTest extends TestBase {
     CustomFieldSection address = createSection("Address", "user");
 
     putWithStatus(sectionResourcePath(address.getId()), sectionJson("CONTACT", "user"), SC_UNPROCESSABLE_ENTITY);
+
+    assertEquals("Address", getSection(address.getId()).getName());
   }
 
   @Test
@@ -280,7 +286,8 @@ public class CustomFieldSectionsImplTest extends TestBase {
 
     deleteWithNoContent(sectionResourcePath(created.getId()));
 
-    getWithStatus(sectionResourcePath(created.getId()), SC_NOT_FOUND);
+    String error = getWithStatus(sectionResourcePath(created.getId()), SC_NOT_FOUND).asString();
+    assertThat(error, containsString("CustomFieldSection not found by id"));
   }
 
   @Test
