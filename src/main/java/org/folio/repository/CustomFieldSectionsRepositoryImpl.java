@@ -18,7 +18,6 @@ import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Tuple;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import org.folio.db.CqlQuery;
@@ -35,10 +34,13 @@ import org.folio.rest.persist.interfaces.Results;
 @Component
 public class CustomFieldSectionsRepositoryImpl implements CustomFieldSectionsRepository {
 
-  @Autowired
-  private Vertx vertx;
-  @Autowired
-  private DBExceptionTranslator excTranslator;
+  private final Vertx vertx;
+  private final DBExceptionTranslator excTranslator;
+
+  public CustomFieldSectionsRepositoryImpl(Vertx vertx, DBExceptionTranslator excTranslator) {
+    this.vertx = vertx;
+    this.excTranslator = excTranslator;
+  }
 
   @Override
   public Future<CustomFieldSection> save(CustomFieldSection entity, @Nonnull Conn connection) {

@@ -20,7 +20,6 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import org.folio.repository.CustomFieldSectionsRepository;
@@ -35,12 +34,16 @@ import org.folio.service.exc.ServiceExceptions;
 @Component
 public class CustomFieldSectionsServiceImpl implements CustomFieldSectionsService {
 
-  @Autowired
-  private CustomFieldSectionsRepository repository;
-  @Autowired
-  private CustomFieldsRepository customFieldsRepository;
-  @Autowired
-  private Vertx vertx;
+  private final CustomFieldSectionsRepository repository;
+  private final CustomFieldsRepository customFieldsRepository;
+  private final Vertx vertx;
+
+  public CustomFieldSectionsServiceImpl(CustomFieldSectionsRepository repository,
+                                       CustomFieldsRepository customFieldsRepository, Vertx vertx) {
+    this.repository = repository;
+    this.customFieldsRepository = customFieldsRepository;
+    this.vertx = vertx;
+  }
 
   @Override
   public Future<CustomFieldSection> save(CustomFieldSection section, String tenantId) {

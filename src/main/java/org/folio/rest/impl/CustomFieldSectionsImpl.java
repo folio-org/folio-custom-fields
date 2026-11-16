@@ -33,6 +33,9 @@ import org.folio.service.CustomFieldSectionsService;
 import org.folio.spring.SpringContextUtil;
 import org.folio.validate.section.CustomFieldSectionValidator;
 
+// RMB instantiates resource classes through the no-arg constructor, so constructor injection is not possible here;
+// dependencies are filled in by SpringContextUtil.autowireDependencies.
+@SuppressWarnings("java:S6813")
 public class CustomFieldSectionsImpl implements CustomFieldSections {
 
   @Autowired
