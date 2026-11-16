@@ -18,7 +18,7 @@ import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Tuple;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import org.folio.db.CqlQuery;
 import org.folio.db.RowSetUtils;
@@ -31,7 +31,7 @@ import org.folio.rest.persist.PostgresClient;
 import org.folio.rest.persist.interfaces.Results;
 
 @Log4j2
-@Component
+@Repository
 public class CustomFieldSectionsRepositoryImpl implements CustomFieldSectionsRepository {
 
   private final Vertx vertx;

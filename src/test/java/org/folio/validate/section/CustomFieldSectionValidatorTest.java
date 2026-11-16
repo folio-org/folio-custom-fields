@@ -27,22 +27,22 @@ public class CustomFieldSectionValidatorTest {
 
   @Test
   public void shouldRejectBlankName() {
-    IllegalArgumentException exc = assertThrows(IllegalArgumentException.class,
-      () -> validator.validate(section(" ", "user")));
+    CustomFieldSection section = section(" ", "user");
+    IllegalArgumentException exc = assertThrows(IllegalArgumentException.class, () -> validator.validate(section));
     assertThat(exc.getMessage(), containsString("The 'name' of the section must not be blank"));
   }
 
   @Test
   public void shouldRejectTooLongName() {
-    IllegalArgumentException exc = assertThrows(IllegalArgumentException.class,
-      () -> validator.validate(section("x".repeat(66), "user")));
+    CustomFieldSection section = section("x".repeat(66), "user");
+    IllegalArgumentException exc = assertThrows(IllegalArgumentException.class, () -> validator.validate(section));
     assertThat(exc.getMessage(), containsString("The 'name' length cannot be more than 65"));
   }
 
   @Test
   public void shouldRejectBlankEntityType() {
-    IllegalArgumentException exc = assertThrows(IllegalArgumentException.class,
-      () -> validator.validate(section("Contact", "")));
+    CustomFieldSection section = section("Contact", "");
+    IllegalArgumentException exc = assertThrows(IllegalArgumentException.class, () -> validator.validate(section));
     assertThat(exc.getMessage(), containsString("The 'entityType' of the section must not be blank"));
   }
 

@@ -31,7 +31,7 @@ public final class CqlSortUtils {
 
     try {
       final CQLParser parser = new CQLParser(CQLParser.V1POINT2);
-      CQLNode node = parser.parse(!StringUtils.isBlank(cqlQuery) ? cqlQuery : ALL_RECORDS_QUERY);
+      CQLNode node = parser.parse(StringUtils.isBlank(cqlQuery) ? ALL_RECORDS_QUERY : cqlQuery);
       SortVisitor visitor = new SortVisitor();
       node.traverse(visitor);
       CQLSortNode foundSortNode = visitor.getCqlSortNode();

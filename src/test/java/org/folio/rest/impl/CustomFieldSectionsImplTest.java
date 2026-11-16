@@ -23,7 +23,8 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -102,7 +104,7 @@ public class CustomFieldSectionsImplTest extends TestBase {
     CustomFieldSection userSection = createSection("General", "user");
     CustomFieldSection packageSection = createSection("General", "package");
 
-    assertFalse(userSection.getId().equals(packageSection.getId()));
+    assertNotEquals(userSection.getId(), packageSection.getId());
   }
 
   @Test
@@ -486,8 +488,8 @@ public class CustomFieldSectionsImplTest extends TestBase {
 
     CompletableFuture<ExtractableResponse<Response>> delete = CompletableFuture.supplyAsync(
       () -> deleteWithStatus(sectionResourcePath(section.getId()), SC_UNPROCESSABLE_ENTITY));
-    TimeUnit.SECONDS.sleep(1);
-    assertFalse("delete must wait for the transaction that assigns the section", delete.isDone());
+    // delete must wait for the transaction that assigns the section
+    assertThrows(TimeoutException.class, () -> delete.get(1, TimeUnit.SECONDS));
 
     releaseLock.complete();
     assignment.toCompletionStage().toCompletableFuture().get(10, TimeUnit.SECONDS);

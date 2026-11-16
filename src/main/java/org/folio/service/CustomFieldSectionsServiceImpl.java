@@ -20,7 +20,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import org.folio.repository.CustomFieldSectionsRepository;
 import org.folio.repository.CustomFieldsRepository;
@@ -31,7 +31,7 @@ import org.folio.rest.persist.PostgresClient;
 import org.folio.service.exc.ServiceExceptions;
 
 @Log4j2
-@Component
+@Service
 public class CustomFieldSectionsServiceImpl implements CustomFieldSectionsService {
 
   private final CustomFieldSectionsRepository repository;
