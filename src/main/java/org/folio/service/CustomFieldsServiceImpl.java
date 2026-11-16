@@ -165,9 +165,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         Set<String> fieldsToRemove = Sets.difference(existingFieldsMap.keySet(), newFieldsMap.keySet());
         Set<String> fieldsToUpdate = Sets.intersection(existingFieldsMap.keySet(), newFieldsMap.keySet());
         Set<String> fieldsToInsert = Sets.difference(newFieldsMap.keySet(), existingFieldsMap.keySet());
-        PostgresClient postgresClient = PostgresClient.getInstance(vertx, params.getTenant());
-
-        return postgresClient.withTrans(connection -> validateSections(customFields, params.getTenant(), connection)
+        return pgClient(params.getTenant()).withTrans(connection -> validateSections(customFields, params.getTenant(), connection)
                 .compose(x -> removeFields(connection, fieldsToRemove))
                 .compose(x -> updateFields(params, connection, fieldsToUpdate, newFieldsMap, existingFieldsMap))
                 .compose(x -> insertFields(params, connection, fieldsToInsert, newFieldsMap))
